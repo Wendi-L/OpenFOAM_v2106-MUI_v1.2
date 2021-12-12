@@ -1,0 +1,18 @@
+/*
+ * NOTE: make any changes to this file in etc/wmakeFiles/
+ * Must use -DNDEBUG to disable kahip debug mode.
+ * Using -DMODE_NODESEP is not strictly required for building the library.
+*/
+
+EXE_INC = \
+    ${c++LESSWARN} \
+    ${COMP_OPENMP} \
+    -DNDEBUG -DMODE_NODESEP \
+    -I. \
+    -I$(KAHIP_LIB_SRC) \
+    -I$(KAHIP_LIB_SRC)/partition \
+    -I$(KAHIP_LIB_SRC)/partition/uncoarsening/refinement/quotient_graph_refinement/flow_refinement
+
+LIB_LIBS =
+
+PROJECT_LIBS =

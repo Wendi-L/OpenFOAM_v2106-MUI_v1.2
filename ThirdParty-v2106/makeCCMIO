@@ -1,0 +1,148 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2011-2016 OpenFOAM Foundation
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     makeCCMIO
+#
+# Description
+#     Build the libccmio library
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+
+# libccmio version from OpenFOAM etc/config.sh file:
+_foamConfig ccmio
+
+ccmioPACKAGE=${ccmio_version:-libccmio-2.6.1}
+targetType=lib  # Default is static linkage
+
+#------------------------------------------------------------------------------
+usage()
+{
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    /bin/cat<<USAGE
+
+Usage: ${0##*/} [OPTION] [lib|libso] [libccmio-VERSION]
+options:
+  -gcc          Force use of gcc/g++
+  -help
+
+* Compile the proprietary libccmio library
+      $ccmioPACKAGE
+
+  Users wishing to obtain the library should contact Siemens PLM (cd-adapco)
+  for terms of use.
+
+  After obtaining the $ccmioPACKAGE library, place in folder
+
+      $WM_THIRD_PARTY_DIR/$ccmioPACKAGE/
+
+  prior to running this script.
+
+USAGE
+    showDownloadHint CCMIO
+    exit 1
+}
+#------------------------------------------------------------------------------
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    -h | -help) usage   ;;
+    -gcc)       useGccWmake ;;
+
+    lib|libso)
+        targetType="$1"
+        ;;
+    libccmio-[0-9]*)
+        ccmioPACKAGE="${1%%/}"
+        ;;
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+
+requireWMakeToolchain
+requireExtLibBin
+
+#------------------------------------------------------------------------------
+#
+# Build LIBCCMIO
+#
+CCMIO_SOURCE_DIR=$sourceBASE/$ccmioPACKAGE
+CCMIO_ARCH_PATH=$installBASE/$ccmioPACKAGE
+
+# Sources must be available
+[ -d "$CCMIO_SOURCE_DIR" ] || die "Missing sources: '$ccmioPACKAGE'"
+
+#
+# Manual installation
+#
+install()
+{
+    # Ensure a clean build next time
+    wclean
+
+    local incdir=$CCMIO_ARCH_PATH/include/libccmio
+
+    # Make headers available:
+    mkdir -m 0755 -p $incdir
+
+    /bin/cp -pv libccmio/ccmio*.h $incdir
+}
+
+echo "Starting build: $ccmioPACKAGE ($targetType)"
+echo
+(
+    cd "$CCMIO_SOURCE_DIR" || exit
+    export GIT_DIR="$PWD/.git" # Mask seeing our own git-repo
+
+    rm -rf $CCMIO_ARCH_PATH
+    rm -f $FOAM_EXT_LIBBIN/libccmio$EXT_SO
+
+    libdir=$CCMIO_ARCH_PATH/lib
+
+    cpMakeFiles libccmio 2>/dev/null
+
+    # Place static libraries in sub-directory:
+    if [ "$targetType" = lib ]
+    then
+        mkdir -m 0755 -p $libdir 2>/dev/null
+        export FOAM_EXT_LIBBIN=$libdir
+    fi
+
+    wmake -j $WM_NCOMPPROCS -s $targetType \
+    && echo "Built: ccmio" \
+    && install
+) || {
+    echo "Error building: ccmio"
+    exit 1
+}
+
+#------------------------------------------------------------------------------

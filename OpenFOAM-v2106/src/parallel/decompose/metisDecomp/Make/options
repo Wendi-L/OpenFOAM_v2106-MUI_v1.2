@@ -1,0 +1,7 @@
+EXE_INC = \
+    -I$(METIS_INC_DIR) \
+    -I$(LIB_SRC)/parallel/decompose/decompositionMethods/lnInclude
+
+LIB_LIBS = \
+    -ldecompositionMethods \
+    -L$(METIS_LIB_DIR) -lmetis

@@ -1,0 +1,17 @@
+# Cray compiler - a gcc variant/wrapper
+include $(GENERAL_RULES)/Gcc/c++
+
+CC          = CC -std=c++11
+
+c++ARCH     = -m64 -pthread
+
+include $(DEFAULT_RULES)/c++$(WM_COMPILE_OPTION)
+
+c++FLAGS    = $(c++ARCH) $(GFLAGS) $(c++WARN) $(c++OPT) $(c++DBUG) $(ptFLAGS) $(LIB_HEADER_DIRS) -fPIC
+
+Ctoo        = $(WM_SCHEDULER) $(CC) $(c++FLAGS) -c $< -o $@
+cxxtoo      = $(Ctoo)
+cctoo       = $(Ctoo)
+cpptoo      = $(Ctoo)
+
+include $(GENERAL_RULES)/Gcc/link-c++

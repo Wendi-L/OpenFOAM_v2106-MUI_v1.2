@@ -1,0 +1,88 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     minCmake
+#
+# Description
+#     Scour CMakeLists.txt files to report the cmake_minimum required.
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] [dir1 ... dirN]
+options:
+  -help
+
+* Scour specified directories for CMakeLists.txt and their cmake_minimum.
+* Without any arguments, select all first level directories.
+
+USAGE
+    exit 1
+}
+#------------------------------------------------------------------------------
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    -h | -help)
+        usage
+        ;;
+    -*)
+        usage "unknown option: '$1'"
+        ;;
+    *)
+        break
+        ;;
+    esac
+    shift
+done
+
+# Nothing specified - use first level of unpacked directories
+[ "$#" -gt 0 ] || set -- $(find -mindepth 1 -maxdepth 1 -type d)
+
+for dir
+do
+    dir="${dir#./}" # Remove leading  "./"
+    dir="${dir%/}"  # Remove trailing "/"
+
+    min=$(sed -n \
+        -e 's/^.*cmake_minimum.*VERSION *\([0-9.][0-9.]*\).*/\1/p' \
+        "$dir/CMakeLists.txt" \
+        2>/dev/null | head -1)
+
+    if [ -n "$min" ]
+    then
+        # Remove trailing ".0" from version
+        echo "${min%.0}" "${dir#sources/}"
+    fi
+
+done \
+    | sort -n -k 1 \
+    | xargs printf "    %-10s  %s\n"
+    # 4 leading spaces for easy pasting as Markdown
+
+#------------------------------------------------------------------------------

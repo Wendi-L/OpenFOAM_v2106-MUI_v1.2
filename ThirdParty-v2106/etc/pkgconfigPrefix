@@ -1,0 +1,74 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2017-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     etc/pkgconfigPrefix
+#
+# Description
+#     Set the prefix= entry for pkgconfig files to account for a new location.
+#
+#     The specified directory can be any of the following:
+#         - base-dir
+#         - base-dir/bin
+#         - base-dir/lib
+#         - base-dir/lib64
+#         - base-dir/lib/pkgconfig
+#         - base-dir/lib64/pkgconfig
+#
+#     This allows this type of shell command
+#
+#        etc/pkgconfigPrefix $(find platforms -name pkgconfig -type d)
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : current directory is not \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] [directory1 [... directoryN]]
+options:
+  -help
+
+Set the 'prefix=' entry for pkgconfig files.
+The pkgconfig files are located under lib/pkgconfig or lib64/pkgconfig.
+
+USAGE
+    exit 1
+}
+#------------------------------------------------------------------------------
+
+# Process options/arguments
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    -h | -help*) usage   ;;
+
+    *)
+        pkgconfigNewPrefix "$1"
+        ;;
+    esac
+    shift
+done
+
+#------------------------------------------------------------------------------

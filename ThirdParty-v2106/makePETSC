@@ -1,0 +1,286 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2018-2021 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     makePETSC
+#
+# Description
+#     Build script for PETSC
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+_foamConfig petsc
+
+petscPACKAGE="${petsc_version:-petsc-system}"
+targetType=libso
+
+unset hyprePACKAGE
+unset HYPRE_ARCH_PATH   # Avoid inconsistency
+
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] [lib|libso] [HYPRE-VERSION] [PETSC-VERSION] [-- configure-options]
+options:
+  -force        Force compilation, even if include/library already exists
+  -gcc          Force use of gcc/g++
+  -inplace      Build/install inplace (expert option)
+  -debug        Build with debugging enabled
+  -hypre=URL    Specify hypre download location
+  -no-hypre     Disable automatic hypre download/detection
+  -help
+
+* build PETSC with
+      ${petscPACKAGE:-'unspecified petsc version'}
+
+USAGE
+    showDownloadHint PETSC
+
+    echo
+    echo "Many people who have downloaded PETSC have also downloaded HYPRE :"
+    showDownloadHint HYPRE
+
+    exit 1
+}
+#------------------------------------------------------------------------------
+exportCompiler          # Compiler info for CMake/configure
+
+unset optDebug optForce optInplace optHypre
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    --) break;; # Extra configure options (leave on $@ for later detection)
+    -h | -help) usage   ;;
+    -gcc)       useGcc  ;;
+    -force)     optForce=true ;;
+    -inplace)   optInplace=true ;;
+    -debug)     optDebug=true ;;
+
+    lib|libso)  targetType="$1" ;;
+
+    -hypre=*)
+        optHypre="${1#*=}"      # URL for download
+        unset hyprePACKAGE HYPRE_ARCH_PATH
+        ;;
+
+    -no-hypre)
+        optHypre=false
+        unset hyprePACKAGE HYPRE_ARCH_PATH
+        ;;
+
+    hypre-[0-9]* | hypre-git)
+        hyprePACKAGE="${1%%/}"
+        unset optHypre
+        unset HYPRE_ARCH_PATH   # Avoid inconsistency
+        ;;
+    petsc-[0-9]* | petsc-git)
+        petscPACKAGE="${1%%/}"
+        unset PETSC_ARCH_PATH   # Avoid inconsistency
+        ;;
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+
+[ -n "$petscPACKAGE" ] || die "The petsc-VERSION was not specified"
+
+# Nothing to build
+if _foamIsNone "$petscPACKAGE"
+then
+    echo "Using petsc-none (skip ThirdParty build of PETSC)"
+    exit 0
+elif _foamIsSystem "$petscPACKAGE"
+then
+    echo "Using petsc-system"
+    exit 0
+fi
+
+#------------------------------------------------------------------------------
+# Integrations
+
+# Clunky
+if [ -z "$optHypre" ] && [ -n "$hyprePACKAGE" ] \
+&& ! _foamIsNone "$hyprePACKAGE"
+then
+    echo "Using $hyprePACKAGE"
+    : "${HYPRE_ARCH_PATH:=$installBASE$WM_SIZE_OPTIONS/$hyprePACKAGE}"
+fi
+
+
+#------------------------------------------------------------------------------
+#
+# Build PETSC
+#
+#   PETSC_ARCH_PATH  : installation directory
+#   PETSC_SOURCE_DIR : location of the original sources
+
+PETSC_SOURCE_DIR="$sourceBASE/$petscPACKAGE"
+: "${PETSC_ARCH_PATH:=$installBASE$WM_SIZE_OPTIONS/$petscPACKAGE}"
+
+[ -d "$PETSC_SOURCE_DIR" ] || {
+    echo "Missing sources: '$petscPACKAGE'"
+    showDownloadHint PETSC
+    exit 2
+}
+
+
+# PETSC arch - same root as WM_OPTIONS (eg, DPInt32)
+archOpt="$WM_SIZE_OPTIONS"
+
+if [ -n "$optInplace" ]
+then
+    unset installPrefix
+    # No install stage requires
+    makeInstall() { true; }
+else
+
+    # Regular installation location
+    installPrefix="$PETSC_ARCH_PATH"
+
+    makeInstall() {
+        make PETSC_DIR="$PETSC_SOURCE_DIR" PETSC_ARCH="$archOpt" install
+    }
+fi
+
+echo "Starting build: $petscPACKAGE ($targetType)"
+if [ "$WM_PRECISION_OPTION" = SP ]
+then
+    optHypre=false  # No single-precision hypre
+    echo "No single-precision hypre"
+fi
+if [ -d "$PETSC_SOURCE_DIR/$archOpt/externalpackages" ]
+then
+    echo "Removing old $archOpt/externalpackages"
+    rm -rf "$PETSC_SOURCE_DIR/$archOpt/externalpackages"
+fi
+echo
+(
+    # Configuration options
+
+    # Compiler or MPI (but not both)
+    # if [ -d "$MPI_ARCH_PATH" ]
+    # then
+    #     configOpt="--with-mpi-dir=$MPI_ARCH_PATH"
+    # else
+        configOpt="--with-cc=$(whichMpicc) --with-cxx=$(whichMpicxx)"
+    # fi
+
+    if [ "$optDebug" = true ]
+    then
+        configOpt="$configOpt --with-debugging=1"
+    else
+        # A reasonable assumption for optimization
+        configOpt="$configOpt --with-debugging=0"
+        configOpt="$configOpt --COPTFLAGS=-O3 --CXXOPTFLAGS=-O3"
+    fi
+
+    if [ "$targetType" = libso ]
+    then
+        configOpt="$configOpt --with-shared-libraries"
+    fi
+
+    if [ "$WM_LABEL_SIZE" = 64 ]
+    then
+        configOpt="$configOpt --with-64-bit-indices=1"
+    else
+        configOpt="$configOpt --with-64-bit-indices=0"
+    fi
+
+    if [ "$WM_PRECISION_OPTION" = SP ]
+    then
+        configOpt="$configOpt --with-precision=single"
+    else
+        configOpt="$configOpt --with-precision=double"
+    fi
+
+    case "$optHypre" in
+    false)
+        configOpt="$configOpt --with-hypre=0"
+        ;;
+    ftp:* | git:* | http:* | https:*)
+        configOpt="$configOpt --download-hypre=$optHypre"
+        ;;
+    *)
+        # This is a really clunky way to use ThirdParty hypre
+        if [ -f "$HYPRE_ARCH_PATH/include/HYPRE.h" ]
+        then
+            echo "Has installed hypre: $hyprePACKAGE"
+            configOpt="$configOpt --with-hypre-dir=$HYPRE_ARCH_PATH"
+        else
+            configOpt="$configOpt --download-hypre"
+        fi
+    ;;
+    esac
+
+    # Additional configure options
+    if [ "$1" = "--" ]
+    then
+        shift
+        configOpt="$configOpt $@"
+    fi
+
+    # We export compiler settings (above) but actually use the
+    # --with-cc and --with-cxx. So ignore these environment variables.
+
+    unset CC CXX
+    unset CFLAGS CXXFLAGS
+
+    cd "$PETSC_SOURCE_DIR" || exit
+    unset GIT_DIR # No special git-repo handling
+
+    rm -rf "$PETSC_ARCH_PATH"
+    # No clean here, if we have multiple arch in the same directory
+
+    echo
+    set -x
+    ./configure \
+        ${installPrefix:+--prefix="$installPrefix"} \
+       --PETSC_DIR="$PETSC_SOURCE_DIR" \
+       --with-petsc-arch="$archOpt" \
+       --with-clanguage=C \
+       --with-fc=0 \
+       --with-x=0 \
+       $configOpt \
+     && set +x \
+     && echo "Configured: petsc" \
+     && make ${WM_NCOMPPROCS:+-j $WM_NCOMPPROCS} \
+            PETSC_DIR="$PETSC_SOURCE_DIR" PETSC_ARCH="$archOpt" all \
+     && echo "Built: petsc" \
+     && makeInstall \
+     && echo "Installed: petsc - may require etc/pkgconfigPrefix to relocate"
+) || {
+    echo "Error building: petsc"
+    exit 1
+}
+
+
+#------------------------------------------------------------------------------

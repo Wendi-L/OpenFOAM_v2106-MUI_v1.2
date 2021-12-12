@@ -1,0 +1,204 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2011-2016 OpenFOAM Foundation
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     makeLLVM
+#
+# Description
+#     Build script for llvm, clang etc.
+#
+# Note
+#    - Ensure that you always use matching versions between llvm and clang.
+#    - LLVM components such as clang reside in the LLVM tools/ subdirectory
+#
+#    For example, when building from tar files (version 4.0.0)
+#
+#    1) Unpack LLVM:
+#        tar -xJf llvm-4.0.1.src.tar.xz
+#        mv llvm-4.0.1.src  llvm-4.0.1
+#
+#    2) Unpack Clang (also know as cfe):
+#        tar -xJf cfe-4.0.1.src.tar.xz
+#        mv cfe-4.0.1.src  llvm-4.0.1/tools/clang
+#
+#    3) Unpack openmp (optional):
+#        tar -xJf openmp-4.0.1.src.tar.xz
+#        mv openmp-4.0.1.src  llvm-4.0.1/tools/openmp
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+
+[ "${WM_COMPILER#Clang}" = "$WM_COMPILER" ] && WM_COMPILER=Clang  # Force clang
+WM_COMPILER_TYPE=ThirdParty                # Ensure we get the correct settings
+
+# LLVM/Clang version from OpenFOAM etc/config.sh file:
+_foamConfig compiler
+
+llvmPACKAGE=$clang_version
+
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] [llvm-VERSION]
+options:
+  -gcc          Force use of gcc/g++
+  -cmake PATH   with cmake from the given path
+  -help
+
+* build llvm/clang
+      ${llvmPACKAGE:-'unspecified LLVM version'}
+
+USAGE
+    showDownloadHint LLVM
+    exit 1
+}
+#------------------------------------------------------------------------------
+exportCompiler          # Compiler info for CMake/configure
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    -h | -help) usage   ;;
+    -gcc)       useGcc  ;;
+
+    -cmake)
+        [ "$#" -ge 2 ] || die "'$1' option requires an argument"
+        CMAKE_PATH="${2%%/}"
+        shift
+        ;;
+    llvm-[0-9]* | llvm-svn*)
+        llvmPACKAGE="${1%%/}"
+        ;;
+    [0-9]*)
+        llvmPACKAGE="llvm-${1%%/}"
+        ;;
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+
+[ -n "$llvmPACKAGE" ] || die "The llvm-VERSION was not specified"
+
+#------------------------------------------------------------------------------
+# Build/install locations without a compiler name
+buildBASE=$WM_THIRD_PARTY_DIR/build/$WM_ARCH$WM_COMPILER_ARCH
+installBASE=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER_ARCH
+
+# Build LLVM (clang)
+#   LLVM_SOURCE_DIR : location of the original sources
+#   LLVM_BUILD_DIR  : location of the build
+#   LLVM_ARCH_PATH  : location of the installed program
+# - Strip any trailing '.src' from the proper names
+
+LLVM_SOURCE_DIR=$sourceBASE/$llvmPACKAGE
+LLVM_BUILD_DIR=$buildBASE/${llvmPACKAGE%%.src}
+LLVM_ARCH_PATH=$installBASE/${llvmPACKAGE%%.src}
+
+#
+# Build LLVM
+#
+echo "---------------"
+if [ -d $LLVM_ARCH_PATH ]
+then
+    echo "Already built: $llvmPACKAGE"
+elif [ -z "$CMAKE_PATH" ] && $LLVM_SOURCE_DIR/configure -help >/dev/null 2>&1
+then
+    # configure can be used prior to 3.9.0
+    # but use cmake if someone explicitly mentioned -cmake on the command-line
+
+    echo "Starting build: $llvmPACKAGE (using configure)"
+    echo
+    (
+        cd "$LLVM_SOURCE_DIR" || exit
+        export GIT_DIR="$PWD/.git" # Mask seeing our own git-repo
+        make distclean 2>/dev/null
+
+        rm -rf $LLVM_BUILD_DIR
+        mkdir -p $LLVM_BUILD_DIR
+        cd $LLVM_BUILD_DIR
+
+        set -x
+        $LLVM_SOURCE_DIR/configure \
+            --prefix=$LLVM_ARCH_PATH \
+            --with-gcc-toolchain="$(command -v gcc | sed 's%/bin/gcc%%')" \
+            --enable-optimized \
+            --enable-shared \
+        && set +x \
+        && make -j $WM_NCOMPPROCS \
+        && make install \
+        && echo "Built: $llvmPACKAGE"
+    ) || {
+        echo "Error building: $llvmPACKAGE"
+        exit 1
+    }
+
+else
+    # CMake used with 3.9.0 and later
+
+    echo "Starting build: $llvmPACKAGE (using cmake)"
+    echo
+    (
+        # Configuration options:
+        unset configOpt
+
+        cd "$LLVM_SOURCE_DIR" || exit
+        export GIT_DIR="$PWD/.git" # Mask seeing our own git-repo
+
+        if [ -f tools/openmp/CMakeLists.txt ]
+        then
+            configOpt="$configOpt -DLLVM_TOOL_OPENMP_BUILD=ON"
+        fi
+
+        rm -rf $LLVM_BUILD_DIR
+        mkdir -p $LLVM_BUILD_DIR
+        cd $LLVM_BUILD_DIR
+
+        cmake=$(findCMake)
+
+        set -x
+        $cmake \
+            -DCMAKE_INSTALL_PREFIX=$LLVM_ARCH_PATH \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_SHARED_LIBS=ON \
+            $configOpt \
+            $LLVM_SOURCE_DIR \
+        && set +x \
+        && make -j $WM_NCOMPPROCS \
+        && make install \
+        && echo "Built: $llvmPACKAGE"
+    ) || {
+        echo "Error building: $llvmPACKAGE"
+        exit 1
+    }
+
+fi
+
+#------------------------------------------------------------------------------

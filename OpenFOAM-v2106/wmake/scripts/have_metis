@@ -1,0 +1,172 @@
+#----------------------------------*-sh-*--------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2018-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     have_metis
+#
+# Description
+#     Detection/setup of METIS
+#
+# Requires
+#     config.sh/metis
+#
+# Functions provided
+#     have_metis, no_metis, echo_metis, query_metis, search_metis
+#
+# Variables set on success
+#     HAVE_METIS
+#     METIS_ARCH_PATH
+#     METIS_INC_DIR
+#     METIS_LIB_DIR
+#
+#------------------------------------------------------------------------------
+. ${WM_PROJECT_DIR:?}/wmake/scripts/sysFunctions    # General system functions
+
+#------------------------------------------------------------------------------
+
+# Reset
+no_metis()
+{
+    unset HAVE_METIS METIS_ARCH_PATH METIS_INC_DIR METIS_LIB_DIR
+    unset METIS_VERSION
+}
+
+
+# Report
+echo_metis()
+{
+    echo "metis=${HAVE_METIS:-false}"
+    echo "root=\"$METIS_ARCH_PATH\""
+    echo "include=\"$METIS_INC_DIR\""
+    echo "library=\"$METIS_LIB_DIR\""
+}
+
+
+# Search
+# $1 : prefix (*_ARCH_PATH, system, ...)
+#
+# On success, return 0 and export variables
+# -> HAVE_METIS, METIS_ARCH_PATH, METIS_INC_DIR, METIS_LIB_DIR
+search_metis()
+{
+    local warn="==> skip metis"
+    local incName="metis.h"
+    local libName="libmetis"
+
+    local prefix="${1:-system}"
+    local header library
+
+    # ----------------------------------
+    if isNone "$prefix"
+    then
+        [ -n "$warn" ] && echo "$warn (disabled)"
+        return 1
+    elif hasAbsdir "$prefix"
+    then
+        header=$(findFirstFile "$prefix/include/$incName")
+        library=$(findExtLib "$libName")
+    elif isSystem "$prefix"
+    then
+        header=$(findSystemInclude -name="$incName")
+        prefix=$(sysPrefix "$header")
+    else
+        unset prefix
+    fi
+    # ----------------------------------
+
+    # Header
+    [ -n "$header" ] || {
+        [ -n "$warn" ] && echo "$warn (no header)"
+        return 2
+    }
+
+    # Library
+    [ -n "$library" ] \
+    || library=$(findLibrary -prefix="$prefix" -name="$libName") \
+    || {
+        [ -n "$warn" ] && echo "$warn (no library)"
+        return 2
+    }
+
+    # ----------------------------------
+
+    local label
+
+    # Ensure consistent sizes between OpenFOAM and metis header
+    # Extract IDXTYPEWIDTH from metis.h: regex as per ThirdParty Allwmake
+    label=$(sed -ne \
+        's/^.*#define  *IDXTYPEWIDTH  *\([1-9][0-9]\).*/\1/p' \
+        "$header")
+    : "${label:=unknown}"
+
+    # OK
+    echo "metis (label=$label) - $prefix"
+    export HAVE_METIS=true
+    export METIS_ARCH_PATH="$prefix"
+    export METIS_INC_DIR="${header%/*}"     # Basename
+    export METIS_LIB_DIR="${library%/*}"    # Basename
+}
+
+
+# Output as per search_* function
+have_metis()
+{
+    local warn="==> skip metis"
+    local config="config.sh/metis"
+    local file
+
+    if file="$("$WM_PROJECT_DIR"/bin/foamEtcFile "$config")"
+    then
+        . "$file"
+    else
+        [ -n "$warn" ] && echo "$warn (no $config)"
+        return 2
+    fi
+
+    search_metis "$METIS_ARCH_PATH"
+}
+
+
+# Query settings
+query_metis()
+{
+    local config="config.sh/metis"
+    local file
+
+    if file="$("$WM_PROJECT_DIR"/bin/foamEtcFile -mode=o "$config")"
+    then
+        . "$file"
+        _process_query metis "$METIS_ARCH_PATH"
+    else
+        echo "(no $config)" 1>&2
+        echo "metis=unknown"
+    fi
+}
+
+
+#------------------------------------------------------------------------------
+
+# Reset variables
+no_metis
+
+# Test/query
+case "$1" in
+-test)
+    have_metis
+    echo_metis
+    ;;
+-query)
+    query_metis
+    ;;
+esac
+
+#------------------------------------------------------------------------------

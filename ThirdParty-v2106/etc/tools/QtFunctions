@@ -1,0 +1,65 @@
+#---------------------------------*- sh -*-------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2011 OpenFOAM Foundation
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# File
+#     etc/tools/QtFunction
+#
+# Description
+#     Functions for helping relocate a QT installation
+#     To be loaded *after* etc/tools/ThirdPartyFunctions
+#
+#------------------------------------------------------------------------------
+
+# Qt-related variables. Initialization at the end of the file.
+
+qtTYPE=qt-everywhere-opensource-src
+unset qtVERSION # No default version
+
+#------------------------------------------------------------------------------
+
+#
+# Create a qt.conf file in the QT bin/
+# - this can be modified easily if the qt installation is relocated
+#
+createQtConf()
+{
+    local confFile="$QT_ARCH_PATH/bin/qt.conf"
+
+    if [ -n "$QT_ARCH_PATH" ] && [ -d "$QT_ARCH_PATH/bin" ]
+    then
+        /bin/cat << QT_CONF > $confFile
+[Paths]
+Prefix=$QT_ARCH_PATH
+QT_CONF
+        echo "    created qt.conf"
+
+    else
+        echo "Error: QT_ARCH_PATH not correctly set"
+    fi
+}
+
+
+# ------------------------------------------------------------------------------
+
+#
+# create qt.conf and adjust locations to use ${prefix} internally
+#
+finalizeQt()
+{
+    echo "Create/Edit files to ease later relocation of a QT installation"
+    createQtConf
+    pkgconfigAdjust $QT_ARCH_PATH
+}
+
+
+# -----------------------------------------------------------------------------

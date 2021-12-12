@@ -1,0 +1,176 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2011 OpenFOAM Foundation
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     makeQt
+#
+# Description
+#     Build script for QT (the qt-everywhere-opensource-src package)
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+. etc/tools/QtFunctions
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] [qt-VERSION] [-- configure-options]
+options:
+  -force        Force compilation, even if it already exists
+  -gcc          Force use of gcc/g++
+  -help
+
+* build $qtTYPE, version ${qtVERSION:-undefined}
+
+USAGE
+    showDownloadHint QT
+    exit 1
+}
+#------------------------------------------------------------------------------
+exportCompiler true     # Compiler info + flags for CMake/configure
+
+unset optForce
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    --) break;; # Extra configure options (leave on $@ for later detection)
+    -h | -help) usage   ;;
+    -gcc)       useGcc  ;;
+    -force)     optForce=true ;;
+
+    -qt-[0-9]* | [0-9]* | qt-*)
+        # -qt-VERSION, VERSION, qt-VERSION, qt-everywhere-opensource-src-VERSION
+        qtVERSION="${1%%/}";
+        qtVERSION="${qtVERSION##*-}"
+        ;;
+
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+qtPACKAGE=$qtTYPE-$qtVERSION
+
+# Nothing to build
+if _foamIsNone "$qtPACKAGE"
+then
+    echo "Using qt-none (skip ThirdParty build of QT)"
+    exit 0
+elif _foamIsSystem "$qtPACKAGE"
+then
+    echo "Using qt-system"
+    exit 0
+fi
+
+#------------------------------------------------------------------------------
+#
+# Build QT
+
+QT_SOURCE_DIR=$sourceBASE/$qtPACKAGE
+QT_ARCH_PATH=$installBASE/qt-$qtVERSION
+
+echo
+echo ========================================
+echo "Build Qt $qtPACKAGE"
+echo
+
+if [ -z "$optForce" ] \
+&& [ -d "$QT_ARCH_PATH" ] \
+&& [ -r "$QT_ARCH_PATH/bin/qmake" ]
+then
+    echo "Already built: Qt-$qtVERSION"
+else
+    echo "Starting build: Qt-$qtVERSION"
+    (
+        # Configuration options:
+        unset configOpt
+        configOpt="$configOpt -nomake examples"
+
+        case "$qtVERSION" in
+        4*) # QT-4
+            # Without demos.
+            configOpt="$configOpt -nomake demos"
+
+            # Without old qt3 transition code
+            configOpt="$configOpt -no-qt3support"
+
+            # Without WebKit - uses std:tr1 and does not compile with c++11
+            # Fortunately WebKit is now optional for ParaView
+            configOpt="$configOpt -no-webkit"
+            ;;
+
+        *)  # QT-5
+            # Avoid too many X11 system dependencies.
+            configOpt="$configOpt -qt-xcb"
+            ;;
+        esac
+
+        # Additional configure options
+        if [ "$1" = "--" ]
+        then
+            shift
+            configOpt="$configOpt $@"
+        fi
+
+        # End of configuration options
+        # ----------------------------
+        buildDIR=$buildBASE/$qtPACKAGE
+
+        cd "$QT_SOURCE_DIR" || exit
+        export GIT_DIR="$PWD/.git" # Mask seeing our own git-repo
+        [ -e Makefile ] && make distclean 2>/dev/null
+
+        # Remove any existing build folder and recreate
+        rm -rf $QT_ARCH_DIR
+        rm -rf $buildDIR 2>/dev/null
+        mkdir -p $buildDIR
+
+        # Remove any remnants from a previous shadow build
+        rm -f "$QT_SOURCE_DIR/.qmake.cache" 2>/dev/null
+        rm -f "$QT_SOURCE_DIR/src/corelib/global/qconfig.h" 2>/dev/null
+        rm -f "$QT_SOURCE_DIR/src/corelib/global/qconfig.cpp" 2>/dev/null
+
+        cd "$buildDIR" || exit
+
+        # Compile as opensource, accepting LGPL conditions (yes)
+        echo yes | $QT_SOURCE_DIR/configure \
+            -prefix $QT_ARCH_PATH \
+            -opensource \
+            $configOpt \
+        && time make -j $WM_NCOMPPROCS \
+        && make install \
+        && echo "Built: Qt-$qtVERSION" \
+        && finalizeQt
+    ) || {
+        echo "Error building: Qt-$qtVERSION"
+        exit 1
+    }
+fi
+
+# -----------------------------------------------------------------------------

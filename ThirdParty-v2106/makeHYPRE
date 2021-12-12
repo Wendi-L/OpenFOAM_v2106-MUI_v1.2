@@ -1,0 +1,155 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2018-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     makeHYPRE
+#
+# Description
+#     Build script for HYPRE
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+_foamConfig hypre
+
+hyprePACKAGE="${hypre_version:-hypre-system}"
+targetType=libso
+
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] [lib|libso] [HYPRE-VERSION] [-- configure-options]
+options:
+  -force        Force compilation, even if include/library already exists
+  -gcc          Force use of gcc/g++
+  -help
+
+* build HYPRE with
+      ${hyprePACKAGE:-'unspecified hypre version'}
+
+USAGE
+    showDownloadHint HYPRE
+    exit 1
+}
+#------------------------------------------------------------------------------
+exportCompiler          # Compiler info for CMake/configure
+
+unset optForce
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    --) break;; # Extra configure options (leave on $@ for later detection)
+    -h | -help) usage   ;;
+    -gcc)       useGcc  ;;
+    -force)     optForce=true ;;
+
+    lib|libso)
+        targetType="$1"
+        ;;
+
+    hypre-[0-9]* | hypre-git)
+        hyprePACKAGE="${1%%/}"
+        unset HYPRE_ARCH_PATH  # Avoid inconsistency
+        ;;
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+
+[ -n "$hyprePACKAGE" ] || die "The hypre-VERSION was not specified"
+
+# Nothing to build
+if _foamIsNone "$hyprePACKAGE"
+then
+    echo "Using hypre-none (skip ThirdParty build of HYPRE)"
+    exit 0
+elif _foamIsSystem "$hyprePACKAGE"
+then
+    echo "Using hypre-system"
+    exit 0
+fi
+
+#------------------------------------------------------------------------------
+#
+# Build HYPRE
+#
+#   HYPRE_ARCH_PATH  : installation directory
+#   HYPRE_SOURCE_DIR : location of the original sources
+
+HYPRE_SOURCE_DIR="$sourceBASE/$hyprePACKAGE"
+: "${HYPRE_ARCH_PATH:=$installBASE$WM_SIZE_OPTIONS/$hyprePACKAGE}"
+
+[ -d "$HYPRE_SOURCE_DIR" ] || {
+    echo "Missing sources: '$hyprePACKAGE'"
+    showDownloadHint HYPRE
+    exit 1
+}
+
+
+# Compilers
+CC="$(whichMpicc)"
+CXX="$(whichMpicxx)"
+
+echo "Starting build: $hyprePACKAGE ($targetType)"
+echo
+(
+    # Configuration options
+    unset configOpt
+
+    # Additional configure options
+    if [ "$1" = "--" ]
+    then
+        shift
+        configOpt="$configOpt $@"
+    fi
+
+    cd "$HYPRE_SOURCE_DIR/src" || exit
+    export GIT_DIR="$PWD/.git" # Mask seeing our own git-repo
+
+    rm -rf "$HYPRE_ARCH_PATH"
+    [ -e Makefile ] && make distclean 2>/dev/null
+
+    ./configure \
+       --prefix="$HYPRE_ARCH_PATH" \
+       --disable-fortran \
+       --enable-shared \
+       $configOpt \
+    && make -j $WM_NCOMPPROCS \
+    && echo "Built: hypre" \
+    && make install \
+    && echo "Installed: hypre"
+) || {
+    echo "Error building: hypre"
+    exit 1
+}
+
+
+#------------------------------------------------------------------------------

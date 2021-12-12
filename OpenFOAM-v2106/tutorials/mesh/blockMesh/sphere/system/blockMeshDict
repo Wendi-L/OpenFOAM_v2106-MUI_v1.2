@@ -1,0 +1,103 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2106                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale   1;
+
+// Geometric parameters
+outerRadius 1;
+
+// Divisions in x/y/z directions. Can be unequal.
+nx   10;
+ny   $nx;
+nz   $nx;
+
+geometry
+{
+    sphere
+    {
+        type   sphere;
+        origin (0 0 0);
+        radius $outerRadius;
+    }
+}
+
+// Box size
+vo   #eval{ sqrt($outerRadius/3) };
+
+vertices
+(
+    (-$vo -$vo -$vo)
+    ( $vo -$vo -$vo)
+    ( $vo  $vo -$vo)
+    (-$vo  $vo -$vo)
+    (-$vo -$vo  $vo)
+    ( $vo -$vo  $vo)
+    ( $vo  $vo  $vo)
+    (-$vo  $vo  $vo)
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) ($nx $ny $nz) grading (1 1 1)
+);
+
+edges
+(
+    arc 0 1 origin (0 0 0)
+    arc 2 3 origin (0 0 0)
+    arc 6 7 origin (0 0 0)
+    arc 4 5 origin (0 0 0)
+
+    arc 0 3 origin (0 0 0)
+    arc 1 2 origin (0 0 0)
+    arc 5 6 origin (0 0 0)
+    arc 4 7 origin (0 0 0)
+
+    arc 0 4 origin (0 0 0)
+    arc 1 5 origin (0 0 0)
+    arc 2 6 origin (0 0 0)
+    arc 3 7 origin (0 0 0)
+);
+
+faces
+(
+    project (0 4 7 3) sphere  // x-min
+    project (1 2 6 5) sphere  // x-max
+    project (0 1 5 4) sphere  // y-min
+    project (3 7 6 2) sphere  // y-max
+    project (0 3 2 1) sphere  // z-min
+    project (4 5 6 7) sphere  // z-max
+);
+
+boundary
+(
+    walls
+    {
+        type wall;
+        faces
+        (
+            (0 4 7 3)  // x-min
+            (1 2 6 5)  // x-max
+            (0 1 5 4)  // y-min
+            (3 7 6 2)  // y-max
+            (0 3 2 1)  // z-min
+            (4 5 6 7)  // z-max
+        );
+    }
+);
+
+
+// ************************************************************************* //

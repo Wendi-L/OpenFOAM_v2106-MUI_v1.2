@@ -1,0 +1,869 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2011-2016 OpenFOAM Foundation
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     foamConfigurePaths
+#
+# Description
+#     Adjust hardcoded installation versions and paths
+#     in etc/{bashrc,cshrc} and etc/config.{sh,csh}/
+#
+# Requires
+#     - sed
+#     - bin/foamEtcFile
+#
+# Environment
+#     FOAM_CONFIG_ETC
+#         Alternative etc directory for shipped files
+#
+#------------------------------------------------------------------------------
+# Locate the project directory relative to this script
+
+projectDir="$(\cd "${0%/*}" && \pwd -L)"    # The project/bin/tools dir
+projectDir="${projectDir%/*}"               # The project/bin dir
+projectDir="${projectDir%/*}"               # The project dir
+
+#------------------------------------------------------------------------------
+printHelp() {
+    case "$1" in
+    (*compat*)
+        cat << HELP_COMPAT
+Obsolete options:
+  -foamInstall DIR    [obsolete]
+  -projectName NAME   [obsolete]
+  -sigfpe|-no-sigfpe  [obsolete - now under etc/controlDict]
+  -archOption 32|64   [obsolete setting of 'WM_ARCH_OPTION' - edit manually]
+
+Equivalent options:
+  -version -foamVersion --projectVersion
+  -archOption           --archOption
+  -third                -ThirdParty
+  -paraview             --paraviewVersion | -paraviewVersion
+  -paraview-path        --paraviewInstall | -paraviewInstall
+  -scotch               --scotchVersion | -scotchVersion
+  -scotch-path          --scotchArchPath | -scotchArchPath
+  -system-compiler      -system
+  -third-compiler       -third
+
+HELP_COMPAT
+        exit 0 # A clean exit
+        ;;
+    esac
+
+    cat << HELP_HEAD
+
+usage: $0 options
+
+Options
+  -h | -help          Display short help and exit
+  -help-compat        Display compatibility options and exit
+  -help-full          Display full help and exit
+
+Basic
+  -etc=[DIR]          set/unset FOAM_CONFIG_ETC for alternative project files
+  -project-path DIR   specify 'WM_PROJECT_DIR' (eg, /opt/openfoam1806-patch1)
+  -version VER        specify project version (eg, v1806)
+  -sp | -SP | -float32 single precision (WM_PRECISION_OPTION)
+  -dp | -DP | -float64 double precision (WM_PRECISION_OPTION)
+  -spdp | -SPDP       mixed precision (WM_PRECISION_OPTION)
+  -int32 | -int64     label-size (WM_LABEL_SIZE)
+
+Compiler
+  -system-compiler NAME The 'system' compiler to use (eg, Gcc, Clang, Icc,...)
+  -third-compiler NAME  The 'ThirdParty' compiler to use (eg, Clang40,...)
+  -gcc VER            ThirdParty 'default_gcc_version' (eg, gcc-7.5.0)
+  -clang VER          ThirdParty 'default_clang_version' (eg, llvm-10.0.0)
+  gmp-VERSION         For ThirdParty gcc (gmp-system for system library)
+  mpfr-VERSION        For ThirdParty gcc (mpfr-system for system library)
+  mpc-VERSION         For ThirdParty gcc (mpc-system for system library)
+
+MPI
+  -mpi NAME           specify 'WM_MPLIB' type (eg, INTELMPI, etc)
+  -openmpi VER        use ThirdParty openmpi, with version for 'FOAM_MPI'
+  -openmpi-system     use system openmpi
+  -openmpi-third      use ThirdParty openmpi (using default version)
+
+Components versions (ThirdParty)
+  -adios VER          specify 'adios2_version'
+  -boost VER          specify 'boost_version'
+  -cgal VER           specify 'cgal_version'
+  -cmake VER          specify 'cmake_version'
+  -fftw VER           specify 'fffw_version'
+  -kahip VER          specify 'KAHIP_VERSION'
+  -metis VER          specify 'METIS_VERSION'
+  -scotch VER         specify 'SCOTCH_VERSION' (eg, scotch_6.0.4)
+
+HELP_HEAD
+
+    case "$1" in
+    (*full*)
+        cat << HELP_FULL
+Components specified by absolute path
+  -adios-path DIR     Path for 'ADIOS2_ARCH_PATH' (overrides -adios)
+  -boost-path DIR     Path for 'BOOST_ARCH_PATH'  (overrides -boost)
+  -cgal-path DIR      Path for 'CGAL_ARCH_PATH'   (overrides -cgal)
+  -cmake-path DIR     Path for 'CMAKE_ARCH_PATH'  (overrides -cmake)
+  -fftw-path DIR      Path for 'FFTW_ARCH_PATH'   (overrides -fftw)
+  -kahip-path DIR     Path for 'KAHIP_ARCH_PATH'  (overrides -kahip)
+  -metis-path DIR     Path for 'METIS_ARCH_PATH'  (overrides -metis)
+  -scotch-path DIR    Path for 'SCOTCH_ARCH_PATH' (overrides -scotch)
+
+Graphics
+  -paraview VER       specify 'ParaView_VERSION' (eg, 5.4.1 or system)
+  -paraview-qt VER    specify 'ParaView_QT' (eg, qt-system)
+  -paraview-path DIR  specify 'ParaView_DIR' (eg, /opt/ParaView-5.4.1)
+  -llvm VER           specify 'mesa_llvm'
+  -mesa VER           specify 'mesa_version' (eg, mesa-13.0.1)
+  -vtk  VER           specify 'vtk_version' (eg, VTK-7.1.0)
+  -llvm-path DIR      Path for 'LLVM_ARCH_PATH'   (overrides -llvm)
+  -mesa-path DIR      Path for 'MESA_ARCH_PATH'   (overrides -mesa)
+  -vtk-path DIR       Path for 'VTK_DIR'          (overrides -vtk)
+
+HELP_FULL
+        ;;
+    esac
+
+    cat << HELP_TAIL_COMMON
+Adjusts hardcoded versions and installation paths (POSIX and C-shell)
+for OpenFOAM.
+
+HELP_TAIL_COMMON
+
+    exit 0 # A clean exit
+}
+
+
+# Report error and exit
+die()
+{
+    exec 1>&2
+    echo
+    echo "Error encountered:"
+    while [ "$#" -ge 1 ]; do echo "    $1"; shift; done
+    echo
+    echo "See '$0 -help' for usage"
+    echo
+    exit 1
+}
+
+# -----------------------------------------------------------------------------
+
+# Check that it appears to be an OpenFOAM installation and
+# use foamEtcFile to locate files, but only edit shipped files
+
+if [ -d "$projectDir/META-INFO" ] && [ -x "$projectDir"/bin/foamEtcFile ]
+then
+    echo "Configuring OpenFOAM ($projectDir)" 1>&2
+    _foamEtc() {
+        "$projectDir"/bin/foamEtcFile -mode=o "$@"
+    }
+else
+    die "Does not appear to be an OpenFOAM installation" \
+        "No META-INFO/ and/or bin/foamEtcFile found"
+fi
+
+
+# Check if argument matches the expected input. Respects case.
+# Uses sed for consistency with the replacement routines.
+#
+# _matches <arg> <matcher> [... <matcherN>]
+#
+_matches()
+{
+    local input="$1"
+    shift
+    local result
+    for regexp
+    do
+        result=$(echo "$input" | sed -ne "/^$regexp"'$/p')
+        test -n "$result" && return 0  # successful match
+    done
+    return 1
+}
+
+
+# Function to do replacement on file. Checks if any replacement has been done.
+# _inlineSed <file> <regexp> <replacement> <msg>
+_inlineSed()
+{
+    local file="$1"
+    local regexp="$2"
+    local replacement="$3"
+    local msg="$4"
+    local cmd='/^[^#]/s@'"$regexp"'@'"$replacement"'@'
+    local localFile
+
+    [ -f "$file" ] || {
+        echo "Missing file: $file"
+        exit 2 # Fatal
+    }
+
+    # Local filename (for reporting)
+    localFile="$(echo "$file" | sed -e "s#^$projectDir/##")"
+
+    grep -q "$regexp" "$file" && sed -i -e "$cmd" "$file" || { \
+        echo "Failed: ${msg:-replacement} in $localFile"
+        return 1
+    }
+
+    [ -n "$msg" ] && echo "    $msg  ($localFile)"
+
+    return 0
+}
+
+
+# Standard <key> <val> type of replacements.
+# replace <file> <key1> <val1> .. <keyN> <valN>
+# looks for KEYWORD=.*
+replace()
+{
+    local file="$1"
+    shift
+
+    local key val
+
+    while [ "$#" -ge 2 ]
+    do
+        key=$1
+        val=$2
+        shift 2
+
+        _inlineSed \
+            "$file"  \
+            "$key=.*" \
+            "$key=$val" \
+            "Replaced $key by '$val'"
+    done
+}
+
+# Standard <key> <val> type of replacements.
+# replace <file> <key1> <val1> .. <keyN> <valN>
+# looks for "setenv KEYWORD value"
+# but avoids "setenv KEYWORD" without a value
+replaceCsh()
+{
+    local file="$1"
+    shift
+
+    local key val
+
+    while [ "$#" -ge 2 ]
+    do
+        key=$1
+        val=$2
+        shift 2
+
+        _inlineSed \
+            "$file"  \
+            "setenv [ ]*$key [^ #]*" \
+            "setenv $key $val" \
+            "Replaced $key by '$val'"
+    done
+}
+
+# Locate file with foamEtcFile -mode=o and forward to replace()
+replaceEtc()
+{
+    local file="$1"
+    shift
+
+    file=$(_foamEtc "$file")
+    replace $file "$@"
+}
+
+
+# Locate file with foamEtcFile -mode=o and forward to replaceCsh()
+replaceEtcCsh()
+{
+    local file="$1"
+    shift
+
+    file=$(_foamEtc "$file")
+    replaceCsh $file "$@"
+}
+
+
+# Get the option's value (argument), or die on missing or empty argument
+# $1 option
+# $2 value
+getOptionValue()
+{
+    local value="$2"
+    [ -n "$value" ] || die "'$1' option requires an argument"
+
+    # Remove any surrounding double quotes
+    value="${value%\"}"
+    value="${value#\"}"
+
+    echo "$value"
+}
+
+
+# Remove BASH_SOURCE and projectDir=... magic that looks like this:
+# ----
+#     projectDir=$BASH_SOURCE
+#     [ -n "$projectDir" ] && projectDir= ...
+#     projectDir=...
+# ----
+removeBashMagic()
+{
+    local file="$1"
+    local localFile
+
+    # Local filename (for reporting)
+    localFile="$(echo "$file" | sed -e "s#^$projectDir/##")"
+
+    [ -f "$file" ] || {
+        echo "Missing file: $file"
+        exit 2 # Fatal
+    }
+
+    echo "    Remove automatic projectDir setting ($localFile)"
+
+    sed -i \
+        -e '/^ *#/!{/\(BASH_SOURCE\|projectDir=\)/s/^/##IGNORE## /}' \
+        "$file"
+}
+
+
+# Remove set projectName=, set projectDir= magic that looks like this:
+# ----
+# set projectName="$WM_PROJECT"
+# set projectDir=`lsof +p $$ |& \
+#     sed -ne 'something /etc/cshrc something'`
+# ----
+removeCshMagic()
+{
+    local file="$1"
+    local localFile
+
+    # Local filename (for reporting)
+    localFile="$(echo "$file" | sed -e "s#^$projectDir/##")"
+
+    [ -f "$file" ] || {
+        echo "Missing file: $file"
+        exit 2 # Fatal
+    }
+
+    echo "    Remove automatic projectDir setting ($localFile)"
+
+    sed -i \
+        -e '/^ *#/!{\@\(projectName=\|projectDir=\|/etc/cshrc\)@s/^/##IGNORE## /}' \
+        "$file"
+}
+
+
+#------------------------------------------------------------------------------
+
+unset adjusted optMpi
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    -help-c*)   # Compat help
+        printHelp -compat
+        ;;
+    -help-f*)   # Full help
+        printHelp -full
+        ;;
+    -h | -help*) # Short help
+        printHelp
+        ;;
+    '')
+        # Discard empty arguments
+        ;;
+
+    -debug-list)
+        # Undocumented (experimental)
+        # TDB: List files that can be edited by this script
+        cat << CONFIG_SH
+etc/bashrc
+etc/config.sh/adios2
+etc/config.sh/compiler
+etc/config.sh/paraview
+etc/config.sh/vtk
+etc/config.sh/cgal
+etc/config.sh/cmake
+etc/config.sh/fftw
+etc/config.sh/metis
+etc/config.sh/kahip
+etc/config.sh/scotch
+CONFIG_SH
+
+        cat << CONFIG_CSH
+etc/cshrc
+etc/config.csh/adios2
+etc/config.csh/compiler
+etc/config.csh/paraview
+etc/config.csh/vtk
+etc/config.csh/cgal
+etc/config.csh/fftw
+CONFIG_CSH
+        exit 0
+        ;;
+
+## Basic ##
+
+   -etc=*)
+        # FOAM_CONFIG_ETC for finding files. Empty unsets it
+        export FOAM_CONFIG_ETC="${1#*=}"
+        [ -n "$FOAM_CONFIG_ETC" ] || unset FOAM_CONFIG_ETC
+        ;;
+
+   -project-path)
+        # Replace WM_PROJECT_DIR=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc     bashrc  WM_PROJECT_DIR "\"$optionValue\""
+        replaceEtcCsh  cshrc   WM_PROJECT_DIR "\"$optionValue\""
+
+        removeBashMagic $(_foamEtc bashrc)
+        removeCshMagic  $(_foamEtc cshrc)
+
+        adjusted=true
+        shift
+        ;;
+
+   -version | -foamVersion | --projectVersion)
+        # Replace WM_PROJECT_VERSION=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc     bashrc  WM_PROJECT_VERSION "$optionValue"
+        replaceEtcCsh  cshrc   WM_PROJECT_VERSION "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -sp | -SP | -float32)
+        # Replace WM_PRECISION_OPTION=...
+        replaceEtc     bashrc  WM_PRECISION_OPTION "SP"
+        replaceEtcCsh  cshrc   WM_PRECISION_OPTION "SP"
+        adjusted=true
+        ;;
+
+    -dp | -DP | -float64)
+        # Replace WM_PRECISION_OPTION=...
+        replaceEtc     bashrc  WM_PRECISION_OPTION "DP"
+        replaceEtcCsh  cshrc   WM_PRECISION_OPTION "DP"
+        adjusted=true
+        ;;
+
+    -spdp | -SPDP)
+        # Replace WM_PRECISION_OPTION=...
+        replaceEtc     bashrc  WM_PRECISION_OPTION "SPDP"
+        replaceEtcCsh  cshrc   WM_PRECISION_OPTION "SPDP"
+        adjusted=true
+        ;;
+
+    -int32 | -int64)
+        # Replace WM_LABEL_SIZE=...
+        optionValue="${1#-int}"
+        replaceEtc     bashrc  WM_LABEL_SIZE "$optionValue"
+        replaceEtcCsh  cshrc   WM_LABEL_SIZE "$optionValue"
+        adjusted=true
+        ;;
+
+
+## Compiler ##
+
+    -clang)
+        # Replace default_clang_version=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/compiler   default_clang_version "$optionValue"
+        replaceEtc  config.csh/compiler  default_clang_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -gcc)
+        # Replace default_gcc_version=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/compiler   default_gcc_version "$optionValue"
+        replaceEtc  config.csh/compiler  default_gcc_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -system-compiler | -system)
+        # Replace WM_COMPILER_TYPE=... and WM_COMPILER=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  bashrc  \
+            WM_COMPILER_TYPE system \
+            WM_COMPILER "$optionValue"
+        replaceEtcCsh  cshrc \
+            WM_COMPILER_TYPE system \
+            WM_COMPILER "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -third-compiler | -third | -ThirdParty)
+        # Replace WM_COMPILER_TYPE=... and WM_COMPILER=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  bashrc  \
+            WM_COMPILER_TYPE ThirdParty \
+            WM_COMPILER "$optionValue"
+        replaceEtcCsh  cshrc  \
+            WM_COMPILER_TYPE ThirdParty \
+            WM_COMPILER "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    gmp-[4-9]* | gmp-system)
+        # gcc-related package
+        replaceEtc  config.sh/compiler   default_gmp_version "$1"
+        replaceEtc  config.csh/compiler  default_gmp_version "$1"
+        adjusted=true
+        ;;
+
+    mpfr-[2-9]* | mpfr-system)
+        # gcc-related package
+        replaceEtc  config.sh/compiler   default_mpfr_version "$1"
+        replaceEtc  config.csh/compiler  default_mpfr_version "$1"
+        adjusted=true
+        ;;
+
+    mpc-[0-9]* | mpc-system)
+        # gcc-related package
+        replaceEtc  config.sh/compiler   default_mpc_version "$1"
+        replaceEtc  config.csh/compiler  default_mpc_version "$1"
+        adjusted=true
+        ;;
+
+
+## MPI ##
+
+    -mpi)
+        # Explicitly set WM_MPLIB=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc     bashrc  WM_MPLIB "$optionValue"
+        replaceEtcCsh  cshrc   WM_MPLIB "$optionValue"
+        optMpi=system
+        adjusted=true
+        shift
+        ;;
+
+    -openmpi)
+        # Replace FOAM_MPI=openmpi-<digits>.. and set to use third-party
+        #  The edit is slightly fragile, but works
+        expected="openmpi-[1-9][.0-9]*"
+        optMpi=$(getOptionValue "$@")
+
+        _matches "$optMpi" "$expected" || \
+            die "'$1' has bad value: '$optMpi'"
+
+        _inlineSed  $(_foamEtc config.sh/mpi) \
+            "FOAM_MPI=$expected" \
+            "FOAM_MPI=$optMpi" \
+            "Replaced 'FOAM_MPI=$expected' by 'FOAM_MPI=$optMpi'"
+
+        _inlineSed  $(_foamEtc config.csh/mpi) \
+            "FOAM_MPI $expected" \
+            "FOAM_MPI $optMpi" \
+            "Replaced 'FOAM_MPI $expected' by 'FOAM_MPI $optMpi'"
+
+        replaceEtc     bashrc  WM_MPLIB OPENMPI
+        replaceEtcCsh  cshrc   WM_MPLIB OPENMPI
+        adjusted=true
+        shift
+        ;;
+
+    -openmpi-system)
+        # Explicitly set WM_MPLIB=SYSTEMOPENMPI
+        replaceEtc     bashrc  WM_MPLIB SYSTEMOPENMPI
+        replaceEtcCsh  cshrc   WM_MPLIB SYSTEMOPENMPI
+        optMpi=system
+        adjusted=true
+        ;;
+
+    -openmpi-third)
+        # Explicitly set WM_MPLIB=OPENMPI, using default setting for openmpi
+        replaceEtc     bashrc  WM_MPLIB OPENMPI
+        replaceEtcCsh  cshrc   WM_MPLIB OPENMPI
+        optMpi=third
+        adjusted=true
+        ;;
+
+
+## Components ##
+
+    -adios | -adios2)
+        # Replace adios2_version=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/adios2   adios2_version "$optionValue"
+        replaceEtc  config.csh/adios2  adios2_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -adios-path | -adios2-path)
+        # Replace ADIOS2_ARCH_PATH=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc     config.sh/adios2   ADIOS2_ARCH_PATH "\"$optionValue\""
+        replaceEtcCsh  config.csh/adios2  ADIOS2_ARCH_PATH "\"$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+    -boost)
+        # Replace boost_version=...  (config is cgal or CGAL)
+        optionValue=$(getOptionValue "$@")
+        cfgName=cgal; _foamEtc -q config.sh/"$cfgName" || cfgName=CGAL
+        replaceEtc  config.sh/"$cfgName"   boost_version "$optionValue"
+        replaceEtc  config.csh/"$cfgName"  boost_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -boost-path)
+        # Replace BOOST_ARCH_PATH=...  (config is cgal or CGAL)
+        optionValue=$(getOptionValue "$@")
+        cfgName=cgal; _foamEtc -q config.sh/"$cfgName" || cfgName=CGAL
+        replaceEtc  config.sh/"$cfgName"   BOOST_ARCH_PATH "\"$optionValue\""
+        replaceEtc  config.csh/"$cfgName"  BOOST_ARCH_PATH "\"$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+    -cgal)
+        # Replace cgal_version=...  (config is cgal or CGAL)
+        optionValue=$(getOptionValue "$@")
+        cfgName=cgal; _foamEtc -q config.sh/"$cfgName" || cfgName=CGAL
+        replaceEtc  config.sh/"$cfgName"   cgal_version "$optionValue"
+        replaceEtc  config.csh/"$cfgName"  cgal_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -cgal-path)
+        # Replace CGAL_ARCH_PATH=...  (config is cgal or CGAL)
+        optionValue=$(getOptionValue "$@")
+        cfgName=cgal; _foamEtc -q config.sh/"$cfgName" || cfgName=CGAL
+        replaceEtc     config.sh/"$cfgName"   CGAL_ARCH_PATH "$optionValue"
+        replaceEtcCsh  config.csh/"$cfgName"  CGAL_ARCH_PATH "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -fftw)
+        # Replace fftw_version=...
+        optionValue=$(getOptionValue "$@")
+        # config.sh/fftw or config.sh/FFTW
+        cfgName=fftw; _foamEtc -q config.sh/"$cfgName" || cfgName=FFTW
+        replaceEtc  config.sh/"$cfgName"   fftw_version "$optionValue"
+        replaceEtc  config.csh/"$cfgName"  fftw_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -fftw-path)
+        # Replace FFTW_ARCH_PATH=...
+        optionValue=$(getOptionValue "$@")
+        # config.sh/fftw or config.sh/FFTW
+        cfgName=fftw; _foamEtc -q config.sh/"$cfgName" || cfgName=FFTW
+        replaceEtc     config.sh/"$cfgName"  FFTW_ARCH_PATH "\"$optionValue\""
+        replaceEtcCsh  config.csh/"$cfgName" FFTW_ARCH_PATH "\"$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+    -cmake)
+        # Replace cmake_version=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/cmake   cmake_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -cmake-path)
+        # Replace CMAKE_ARCH_PATH=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/cmake   CMAKE_ARCH_PATH "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -kahip)
+        # Replace KAHIP_VERSION=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/kahip  KAHIP_VERSION "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -kahip-path)
+        # Replace KAHIP_ARCH_PATH=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/kahip  KAHIP_ARCH_PATH "\"$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+    -metis)
+        # Replace METIS_VERSION=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/metis  METIS_VERSION "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -metis-path)
+        # Replace METIS_ARCH_PATH=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/metis  METIS_ARCH_PATH "\"$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+    -scotch | -scotchVersion | --scotchVersion)
+        # Replace SCOTCH_VERSION=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/scotch  SCOTCH_VERSION "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -scotch-path | -scotchArchPath | --scotchArchPath)
+        # Replace SCOTCH_ARCH_PATH=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/scotch  SCOTCH_ARCH_PATH "\"$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+
+## Graphics ##
+
+    -paraview | -paraviewVersion | --paraviewVersion)
+        # Replace ParaView_VERSION=...
+        expected="[5-9][.0-9]*"  # but also accept system
+        optionValue=$(getOptionValue "$@")
+        _matches "$optionValue" "$expected" || \
+            [ "$optionValue" != "${optionValue%system}" ] || \
+            die "'$1' has bad value: '$optionValue'"
+        replaceEtc  config.sh/paraview   ParaView_VERSION "$optionValue"
+        replaceEtc  config.csh/paraview  ParaView_VERSION "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -paraview-qt)
+        # Replace ParaView_QT=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/paraview   ParaView_QT "$optionValue"
+        replaceEtc  config.csh/paraview  ParaView_QT "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -paraview-path | -paraviewInstall | --paraviewInstall)
+        # Replace ParaView_DIR=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc     config.sh/paraview   ParaView_DIR \""$optionValue\""
+        replaceEtcCsh  config.csh/paraview  ParaView_DIR \""$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+    -llvm)
+        # Replace mesa_llvm=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/vtk   mesa_llvm "$optionValue"
+        replaceEtc  config.csh/vtk  mesa_llvm "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -mesa)
+        # Replace mesa_version=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/vtk   mesa_version "$optionValue"
+        replaceEtc  config.csh/vtk  mesa_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -vtk)
+        # Replace vtk_version=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc  config.sh/vtk   vtk_version "$optionValue"
+        replaceEtc  config.csh/vtk  vtk_version "$optionValue"
+        adjusted=true
+        shift
+        ;;
+
+    -llvm-path)
+        # Replace LLVM_ARCH_PATH=...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc     config.sh/vtk   LLVM_ARCH_PATH \""$optionValue\""
+        replaceEtcCsh  config.csh/vtk  LLVM_ARCH_PATH \""$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+    -mesa-path)
+        # Replace MESA_ARCH_PATH...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc     config.sh/vtk   MESA_ARCH_PATH \""$optionValue\""
+        replaceEtcCsh  config.csh/vtk  MESA_ARCH_PATH \""$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+    -vtk-path)
+        # Replace VTK_DIR...
+        optionValue=$(getOptionValue "$@")
+        replaceEtc     config.sh/vtk   VTK_DIR \""$optionValue\""
+        replaceEtcCsh  config.csh/vtk  VTK_DIR \""$optionValue\""
+        adjusted=true
+        shift
+        ;;
+
+
+## Misc ##
+
+    -sigfpe | -no-sigfpe)
+        echo "Enable/disable FOAM_SIGFPE now via controlDict" 1>&2
+        ;;
+
+    -archOption | --archOption)
+        # Replace WM_ARCH_OPTION=...
+        optionValue=$(getOptionValue "$@")
+        echo "Ignoring $1 option: no longer supported" 1>&2
+        shift
+        ;;
+
+    -foamInstall | --foamInstall | -projectName | --projectName)
+        # Removed for 1812
+        optionValue=$(getOptionValue "$@")
+        echo "Ignoring $1 option: obsolete" 1>&2
+        shift
+        ;;
+
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+
+if [ "$adjusted" = false ]
+then
+    echo "Nothing adjusted"
+    exit 0
+elif [ -z "$adjusted" ]
+then
+    die "Please specify at least one configure option"
+fi
+
+#------------------------------------------------------------------------------

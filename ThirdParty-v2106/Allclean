@@ -1,0 +1,168 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2011 OpenFOAM Foundation
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     Allclean
+#
+# Description
+#     Clean script for ThirdParty applications/libraries
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+# . etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+Usage: ${0##*/} [OPTION] [platform [ ... platformN]]
+options:
+  -all              remove all platforms directories
+  -current          clean the current platform ($WM_OPTIONS)
+  -help             print the usage
+
+Cleanup intermediate build directories.
+Optionally remove specified platform(s) from the ThirdParty platforms
+directory $WM_THIRD_PARTY_DIR/platforms
+
+USAGE
+    exit 1
+}
+
+# Print help message
+case "$1" in
+(-h | -help*)
+    usage
+    ;;
+esac
+
+#------------------------------------------------------------------------------
+
+# Clean various packages via 'distclean'
+for i in \
+    openmpi-* metis-* adios-* ADIOS-* gperftools-* qt-* \
+    gmp-* mpfr-* mpc-* gcc-* llvm-* \
+;
+do
+    if [ -d "$i" ]
+    then
+    (
+        echo
+        echo "${i%/*}"
+        echo "    make distclean"
+        echo
+        cd $i && make distclean
+    )
+    fi
+done
+
+
+# Clean various packages via 'realclean'
+for i in scotch*/src
+do
+    if [ -d "$i" ]
+    then
+    (
+        echo
+        echo "${i%/*}"
+        echo "    make realclean"
+        echo
+        cd $i && make realclean
+    )
+    fi
+done
+
+
+# Clean various packages via 'wclean'
+for i in libccmio*/Make kahip*/lib/Make
+do
+    if [ -d "$i" ]
+    then
+    (
+        echo
+        echo "${i%/Make}"
+        echo "    wclean"
+        echo
+        cd ${i%/Make} && wclean
+    )
+    fi
+done
+
+
+# Clean out-of-source build directories
+if [ -d build ]
+then
+    echo
+    echo "Clean build/ directory"
+    rm -rf build/*
+fi
+
+# -----------------------------------------------------------------------------
+
+#
+# Clean platforms directories
+#
+removePlatform()
+{
+    local platform="$1"
+    if [ -n "$platform" ] && [ -d "platforms/$platform" ]
+    then
+        echo
+        echo "Cleaning platform '$platform'"
+        rm -rf "platforms/$platform"
+    else
+        echo
+        echo "Platform '$platform' not built"
+    fi
+}
+
+if [ "$#" -ge 1 ]
+then
+    echo
+    echo "Clean platforms/sub-directories"
+fi
+
+# Optionally cleanup platforms specified from the arguments
+while [ "$#" -ge 1 ]
+do
+    case "$1" in
+    -all)
+        echo
+        echo "Removing all platforms/sub-directories"
+        echo
+        rm -rf platforms/*
+        break
+        ;;
+
+    -current)
+        echo "Current platform '$WM_OPTIONS'"
+        removePlatform "$WM_OPTIONS"
+        ;;
+
+    *)
+        removePlatform "$1"
+        ;;
+    esac
+    shift
+done
+
+#------------------------------------------------------------------------------

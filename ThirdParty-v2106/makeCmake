@@ -1,0 +1,145 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2011 OpenFOAM Foundation
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     makeCmake
+#
+# Description
+#     Build script for cmake.
+#
+#     The '-link' option can be used to create a 'cmake-system' pointing
+#     to this version.
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+
+# Special purpose script - no default version.
+unset cmakePACKAGE
+
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [OPTION] cmake-VERSION
+options:
+  -force        Force compilation, even if binary already exists
+  -gcc          Force use of gcc/g++
+  -link         Create additional symlink as 'cmake-system'
+  -help
+
+* build cmake
+      ${cmakePACKAGE:-'unspecified'}
+
+USAGE
+    showDownloadHint CMAKE
+    exit 1
+}
+#------------------------------------------------------------------------------
+exportCompiler          # Compiler info for CMake/configure
+
+unset optForce optLink
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    -h | -help) usage   ;;
+    -gcc)       useGcc  ;;
+    -force)     optForce=true ;;
+    -link)      optLink=true ;;
+
+    cmake-[0-9]*)
+        cmakePACKAGE="${1%%/}"
+        ;;
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+
+[ -n "$cmakePACKAGE" ] || die "The cmake-VERSION was not specified"
+
+if _foamIsSystem "$cmakePACKAGE"
+then
+    unset optLink # basic sanity - cannot
+fi
+
+#------------------------------------------------------------------------------
+#
+# Build CMAKE
+#   CMAKE_SOURCE_DIR : location of the original sources
+#   CMAKE_ARCH_PATH  : installation directory
+
+CMAKE_SOURCE_DIR=$sourceBASE/$cmakePACKAGE
+CMAKE_ARCH_PATH=$installBASE/$cmakePACKAGE
+
+if [ -z "$optForce" ] \
+&& [ -d "$CMAKE_ARCH_PATH" ] \
+&& [ -r "$CMAKE_ARCH_PATH/bin/cmake" ]
+then
+    echo "Already built: $cmakePACKAGE"
+else
+    echo "Starting build: $cmakePACKAGE"
+    (
+        buildDIR=$buildBASE/$cmakePACKAGE
+
+        cd "$CMAKE_SOURCE_DIR" || exit
+        export GIT_DIR="$PWD/.git" # Mask seeing our own git-repo
+        make distclean 2>/dev/null
+
+        rm -rf $buildDIR
+        mkdir -p $buildDIR
+        cd $buildDIR
+
+        $CMAKE_SOURCE_DIR/bootstrap \
+            --prefix=$CMAKE_ARCH_PATH \
+        && time make -j $WM_NCOMPPROCS \
+        && make install \
+        && echo "Built: $cmakePACKAGE"
+    ) || {
+        echo "Error building: $cmakePACKAGE"
+        exit 1
+    }
+fi
+
+if [ "$optLink" = true ] && [ -x "$CMAKE_ARCH_PATH/bin/cmake" ]
+then
+(
+    cd "${CMAKE_ARCH_PATH%/*}" || exit
+    if [ -L cmake-system ]
+    then
+        rm cmake-system
+    elif [ -d cmake-system ]
+    then
+        exit 2
+    fi
+    ln -svf "$cmakePACKAGE" cmake-system
+)
+fi
+
+#------------------------------------------------------------------------------

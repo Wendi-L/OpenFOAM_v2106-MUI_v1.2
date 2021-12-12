@@ -1,0 +1,235 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2017-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     makeKAHIP
+#
+# Description
+#     Build the KaHIP library (int32 only).
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Dynamic library ending (default is .so)
+[ "$(uname -s)" = Darwin ] && EXT_SO=.dylib || EXT_SO=.so
+
+# Short-circuit test for an installation
+if [ "$1" = "-test" ]
+then
+    [ "$#" -eq 2 ] || { echo "${0##*/} -test : needs 1 argument"; exit 1; }
+    dir="${2%/}" # <- *_ARCH_PATH
+    [ -d "$dir/include" ] || exit 2
+
+    package="kahip"
+    libName="libkahip"
+    for lib in \
+        "$FOAM_EXT_LIBBIN/$libName$EXT_SO" \
+        "$dir/lib/$libName.a" \
+        "$dir/lib/$libName$EXT_SO" \
+        "$dir/lib$WM_COMPILER_LIB_ARCH/$libName.a" \
+        "$dir/lib$WM_COMPILER_LIB_ARCH/$libName$EXT_SO" \
+        ;
+    do
+        if [ -r "$lib" ]
+        then
+            echo "    $package include: $dir/include"
+            echo "    $package library: ${lib%/*}"
+            exit 0
+        fi
+    done
+    exit 2
+fi
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+_foamConfig kahip
+
+kahipPACKAGE=${KAHIP_VERSION:-kahip-system}
+targetType=libso
+
+#------------------------------------------------------------------------------
+usage()
+{
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    /bin/cat<<USAGE
+
+Usage: ${0##*/} [OPTION] [lib|libso] [kahip-VERSION]
+options:
+  -gcc          Force use of gcc/g++
+  -force        Force build attempt (mingw)
+  -cmake PATH   With cmake from the given path
+  -help
+
+* Compile KaHIP
+      $kahipPACKAGE
+
+USAGE
+    showDownloadHint KAHIP
+    exit 1
+}
+#------------------------------------------------------------------------------
+exportCompiler minimal  # Minimal compiler info for CMake/configure
+
+unset optForce
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    -h | -help) usage   ;;
+    -gcc)       useGccWmake ;;
+    -force)     optForce=true ;;
+
+    -cmake)
+        [ "$#" -ge 2 ] || die "'$1' option requires an argument"
+        CMAKE_PATH="${2%%/}"
+        shift
+        ;;
+
+    lib|libso)
+        targetType="$1"
+        ;;
+
+    kahip-[0-9]* | kahip-git | KaHIP_* |  KaHIP-[0-9]*)
+        kahipPACKAGE="${1%%/}"
+        unset KAHIP_ARCH_PATH  # Avoid inconsistency
+        ;;
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+
+[ -n "$kahipPACKAGE" ] || die "The kahip-VERSION was not specified"
+
+# Nothing to build
+if _foamIsNone $kahipPACKAGE
+then
+    echo "Using kahip-none (skip ThirdParty build of KAHIP)"
+    exit 0
+elif _foamIsSystem $kahipPACKAGE
+then
+    echo "Using kahip-system"
+    exit 0
+fi
+
+# Known build issues for mingw (uses some non-portable headers)
+case "$WM_COMPILER" in
+(Mingw*)
+    if [ "$optForce" = true ]
+    then
+        echo "Warning: kahip - known compilation issues with $WM_COMPILER"
+    else
+        echo "Skipping kahip - known compilation issues with $WM_COMPILER"
+        exit 0
+    fi
+    ;;
+esac
+
+requireWMakeToolchain
+requireExtLibBin
+
+#------------------------------------------------------------------------------
+#
+# Build KaHIP
+#
+#   KAHIP_ARCH_PATH  : installation directory
+#   KAHIP_SOURCE_DIR : location of the original sources
+
+KAHIP_SOURCE_DIR=$sourceBASE/$kahipPACKAGE
+KAHIP_ARCH_PATH=$installBASE/$kahipPACKAGE
+
+[ -d "$KAHIP_SOURCE_DIR" ] || {
+    echo "Missing sources: '$kahipPACKAGE'"
+    showDownloadHint KAHIP
+    exit 2
+}
+
+#
+# Manual installation
+#
+install()
+{
+    # Ensure a clean build next time
+    wclean
+
+    local bindir=$KAHIP_ARCH_PATH/bin
+    local incdir=$KAHIP_ARCH_PATH/include
+    local libdir=$KAHIP_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH
+
+    mkdir -m 0755 -p $incdir
+
+    /bin/cp -pv \
+        $KAHIP_SOURCE_DIR/interface/kaHIP_interface.h \
+        $incdir
+}
+
+
+# Newer KAHIP (>= 2.11) uses CMake,
+# but unfortunately does not install include/
+# nor pass through flags for 64bit indices in the header.
+withCmake=true
+version=$(echo "$kahipPACKAGE" | sed -e 's/^kahip[-_]*//i')
+case "$version" in 2.0*) unset withCmake;; esac
+
+if true
+then
+(
+    echo "Starting build: $kahipPACKAGE ($targetType) using wmake"
+    echo
+
+    cd "$KAHIP_SOURCE_DIR/lib" || exit
+    export GIT_DIR="$KAHIP_SOURCE_DIR/.git" # Mask seeing our own git-repo
+
+    rm -rf "$KAHIP_ARCH_PATH"
+    rm -f "$FOAM_EXT_LIBBIN/libkahip$EXT_SO"
+
+    libdir=$KAHIP_ARCH_PATH/lib$WM_COMPILER_LIB_ARCH
+
+    cpMakeFiles kahip 2>/dev/null
+
+    if [ -e ../interface ] && [ ! -e interface ]
+    then
+        ln -s ../interface interface
+    fi
+
+    # Place static libraries in sub-directory:
+    if [ "$targetType" = lib ]
+    then
+        mkdir -m 0755 -p $libdir 2>/dev/null
+        export FOAM_EXT_LIBBIN=$libdir
+    fi
+
+    # Location of lib sources for wmake
+    export KAHIP_LIB_SRC=$PWD
+
+    wmake -j $WM_NCOMPPROCS -s $targetType \
+    && echo "Built: kahip" \
+    && install
+) || {
+    echo "Error building: kahip"
+    exit 1
+}
+fi
+
+#------------------------------------------------------------------------------

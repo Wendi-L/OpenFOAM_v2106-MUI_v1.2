@@ -1,0 +1,129 @@
+#!/bin/sh
+#------------------------------------------------------------------------------
+# =========                 |
+# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+#  \\    /   O peration     |
+#   \\  /    A nd           | www.openfoam.com
+#    \\/     M anipulation  |
+#------------------------------------------------------------------------------
+#     Copyright (C) 2012 OpenFOAM Foundation
+#     Copyright (C) 2016-2020 OpenCFD Ltd.
+#------------------------------------------------------------------------------
+# License
+#     This file is part of OpenFOAM, distributed under GPL-3.0-or-later.
+#
+# Script
+#     makeGperftools
+#
+# Description
+#     Build script for gperftools
+#
+# ----------------------------------------------
+# NO USER-CONFIGURABLE SETTINGS WITHIN THIS FILE
+#------------------------------------------------------------------------------
+# Run from third-party directory only
+cd "${0%/*}" || exit
+wmakeCheckPwd "$WM_THIRD_PARTY_DIR" 2>/dev/null || {
+    echo "Error (${0##*/}) : not located in \$WM_THIRD_PARTY_DIR"
+    echo "    Check your OpenFOAM environment and installation"
+    exit 1
+}
+. etc/tools/ThirdPartyFunctions
+#------------------------------------------------------------------------------
+
+# Gperftools version from OpenFOAM etc/config.sh file:
+_foamConfig gperftools
+
+gperftoolsPACKAGE=${gperftools_version:-gperftools-system}
+
+#------------------------------------------------------------------------------
+usage() {
+    exec 1>&2
+    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
+    cat<<USAGE
+
+usage: ${0##*/} [gperftools-VERSION]
+options:
+  -gcc          Force use of gcc/g++
+  -help
+
+* build gperftools
+      $gperftoolsPACKAGE
+
+USAGE
+    showDownloadHint GPERFTOOLS
+    exit 1
+}
+#------------------------------------------------------------------------------
+exportCompiler          # Compiler info for CMake/configure
+
+# Parse options
+while [ "$#" -gt 0 ]
+do
+    case "$1" in
+    '') ;;      # Ignore empty
+    -h | -help) usage   ;;
+    -gcc)       useGcc  ;;
+
+    gperftools-[0-9]* | gperftools-svn* | gperftools-git)
+        gperftoolsPACKAGE="${1%%/}"
+        ;;
+    *)
+        die "unknown option/argument: '$1'"
+        ;;
+    esac
+    shift
+done
+
+[ -n "$gperftoolsPACKAGE" ] || die "The gperftools-VERSION was not specified"
+
+# Nothing to build
+if _foamIsNone $gperftoolsPACKAGE
+then
+    echo "Using gperftools-none (skip ThirdParty build of gperftools)"
+    exit 0
+elif _foamIsSystem $gperftoolsPACKAGE
+then
+    echo "Using gperftools-system (skip ThirdParty build of gperftools)"
+    exit 0
+fi
+
+#------------------------------------------------------------------------------
+#
+# Build gperftools
+#
+GPERFTOOLS_SOURCE_DIR=$sourceBASE/$gperftoolsPACKAGE
+GPERFTOOLS_ARCH_PATH=$installBASE/$gperftoolsPACKAGE
+
+echo "---------------"
+if [ -d "$GPERFTOOLS_ARCH_PATH" ]
+then
+    echo "Already built: $gperftoolsPACKAGE"
+else
+    echo "Starting build: $gperftoolsPACKAGE"
+    (
+        buildDIR=$buildBASE/$gperftoolsPACKAGE
+
+        cd "$GPERFTOOLS_SOURCE_DIR" || exit
+        export GIT_DIR="$PWD/.git" # Mask seeing our own git-repo
+        [ -e Makefile ] && make distclean 2>/dev/null
+
+        rm -rf $GPERFTOOLS_ARCH_PATH
+        rm -rf $buildDIR
+        mkdir -p $buildDIR
+        cd $buildDIR
+
+        set -x
+        $GPERFTOOLS_SOURCE_DIR/configure \
+            --prefix=$GPERFTOOLS_ARCH_PATH \
+        && set +x \
+        && make -j $WM_NCOMPPROCS \
+        && make install \
+        && echo "Built: $gperftoolsPACKAGE" \
+    ) || {
+        echo "Error building: $gperftoolsPACKAGE"
+        exit 1
+    }
+fi
+
+#------------------------------------------------------------------------------
