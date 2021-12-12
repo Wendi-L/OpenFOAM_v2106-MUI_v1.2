@@ -165,6 +165,7 @@ _foamEtc -config  vtk
 _foamEtc -config  adios2
 _foamEtc -config  CGAL
 _foamEtc -config  FFTW
+_foamEtc -config  MUI
 
 if ( -d "$WM_PROJECT_DIR/doc/man1" ) then
     _foamAddMan "$WM_PROJECT_DIR/doc"
