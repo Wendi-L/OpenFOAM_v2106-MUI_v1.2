@@ -8,7 +8,7 @@ CPP        = cpp
 LD         = ld
 
 GFLAGS     = -D$(WM_VERSION) \
-             -DWM_$(WM_PRECISION_OPTION) -DWM_LABEL_SIZE=$(WM_LABEL_SIZE)
+             -DWM_$(WM_PRECISION_OPTION) -DWM_LABEL_SIZE=$(WM_LABEL_SIZE) -DUSE_MUI
 GINC       =
 GLIBS      = -lm
 GLIB_LIBS  =
