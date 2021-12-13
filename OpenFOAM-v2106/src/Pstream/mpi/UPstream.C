@@ -40,6 +40,12 @@ License
 #include <cstdlib>
 #include <csignal>
 
+// NOTE:
+// MUI header included if the switch -DUSE_MUI included during compilation.
+#ifdef USE_MUI
+    #include "mui.h"
+#endif
+
 #if defined(WM_SP)
     #define MPI_SCALAR MPI_FLOAT
     #define MPI_SOLVESCALAR MPI_FLOAT
@@ -191,7 +197,7 @@ bool Foam::UPstream::initNull()
 }
 
 
-bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread)
+bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread, bool coupled)
 {
     int numprocs = 0, myRank = 0;
     int provided_thread_support = 0;
@@ -230,17 +236,43 @@ bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread)
     }
     else
     {
-        MPI_Init_thread
-        (
-            &argc,
-            &argv,
-            (
-                needsThread
-              ? MPI_THREAD_MULTIPLE
-              : MPI_THREAD_SINGLE
-            ),
-            &provided_thread_support
-        );
+		if(coupled)
+		{
+			#ifdef USE_MUI
+				//Use world returned by MUI, based on MPI MPMD model, calls MPI_Init_thread inside MUI function
+				PstreamGlobals::commWorld_ = mui::mpi_split_by_app(argc, argv, (needsThread ? MPI_THREAD_MULTIPLE : MPI_THREAD_SINGLE), &provided_thread_support);
+			#else
+				PstreamGlobals::commWorld_ = MPI_COMM_WORLD;
+
+				MPI_Init_thread
+				(
+					&argc,
+					&argv,
+					(
+						needsThread
+					  ? MPI_THREAD_MULTIPLE
+					  : MPI_THREAD_SINGLE
+					),
+					&provided_thread_support
+				);
+			#endif
+		}
+		else
+		{
+			PstreamGlobals::commWorld_ = MPI_COMM_WORLD;
+
+			MPI_Init_thread
+			(
+				&argc,
+				&argv,
+				(
+					needsThread
+				  ? MPI_THREAD_MULTIPLE
+				  : MPI_THREAD_SINGLE
+				),
+				&provided_thread_support
+			);
+		}
 
         ourMpi = true;
     }
@@ -274,8 +306,8 @@ bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread)
         argc -= 2;
     }
 
-    MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
-    MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+    MPI_Comm_size(PstreamGlobals::commWorld_, &numprocs);
+    MPI_Comm_rank(PstreamGlobals::commWorld_, &myRank);
 
     if (debug)
     {

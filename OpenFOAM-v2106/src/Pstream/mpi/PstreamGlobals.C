@@ -29,6 +29,9 @@ License
 
 // * * * * * * * * * * * * * * Static Data Members * * * * * * * * * * * * * //
 
+
+MPI_Comm Foam::PstreamGlobals::commWorld_;
+
 Foam::DynamicList<MPI_Request> Foam::PstreamGlobals::outstandingRequests_;
 Foam::DynamicList<Foam::label> Foam::PstreamGlobals::freedRequests_;
 

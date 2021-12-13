@@ -385,7 +385,7 @@ public:
 
         //- Initialisation function called from main
         //  Spawns sub-processes and initialises inter-communication
-        static bool init(int& argc, char**& argv, const bool needsThread);
+        static bool init(int& argc, char**& argv, const bool needsThread, bool coupled=false);
 
         //- Special purpose initialisation function.
         //  Performs a basic MPI_Init without any other setup.

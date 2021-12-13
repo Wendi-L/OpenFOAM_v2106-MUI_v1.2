@@ -58,6 +58,9 @@ extern int nTags_;
 //- Free'd message tags
 extern DynamicList<int> freedTags_;
 
+//Default MPI communicator (either allocated by MUI if in use or becomes MPI_COMM_WORLD)
+extern MPI_Comm commWorld_;
+
 // Current communicators. First element will be MPI_COMM_WORLD
 extern DynamicList<MPI_Comm> MPICommunicators_;
 extern DynamicList<MPI_Group> MPIGroups_;

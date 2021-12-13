@@ -1,6 +1,7 @@
 include $(GENERAL_RULES)/mpi-rules
+include $(GENERAL_RULES)/MUI
 
-EXE_INC  = $(PFLAGS) $(PINC) $(c++LESSWARN)
+EXE_INC  = $(PFLAGS) $(PINC) $(c++LESSWARN) $(MUI_INC)
 
 LIB_LIBS = $(PLIBS)
 

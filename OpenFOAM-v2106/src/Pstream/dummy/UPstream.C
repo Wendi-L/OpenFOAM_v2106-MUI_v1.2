@@ -45,7 +45,7 @@ bool Foam::UPstream::initNull()
 }
 
 
-bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread)
+bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread, bool coupled)
 {
     FatalErrorInFunction
         << "The dummy Pstream library cannot be used in parallel mode"
