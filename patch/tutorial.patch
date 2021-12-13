@@ -1,0 +1,895 @@
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/Allclean ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/Allclean
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/Allclean	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/Allclean	2019-08-22 17:15:32.676774000 +0100
+@@ -0,0 +1,20 @@
++#!/bin/bash
++
++domain1=${PWD}/flange_domain1
++domain2=${PWD}/flange_domain2
++
++if [ -d "Logs" ]; 
++then
++  rm -rf Logs
++fi
++
++# clean domain1
++cd ${domain1}
++./Allclean
++cd ..
++
++# clean domain2
++cd ${domain2}
++./Allclean
++cd ..
++
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/AllrunCoupled ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/AllrunCoupled
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/AllrunCoupled	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/AllrunCoupled	2019-08-22 17:15:32.681787200 +0100
+@@ -0,0 +1,41 @@
++#!/bin/bash
++
++domain1=${PWD}/flange_domain1
++domain2=${PWD}/flange_domain2
++
++solver1="laplacianFoam"
++solver2="laplacianFoam"
++
++numProcs=2 #ranks set to 2 for each domain
++
++if [ -d "Logs" ]; 
++then
++  rm -rf Logs
++fi
++
++# clean and create domain1
++cd ${domain1}
++./Allclean
++./Allpreprocess
++cd ..
++
++# clean and create domain2
++cd ${domain2}
++./Allclean
++./Allpreprocess
++cd ..
++
++# Console output to files (1 per rank, so files .1.0 and .1.1 output from flange_domain1, files .1.2 and .1.3 output from flange_domain2)
++#mpirun -np ${numProcs} --output-filename Logs/coupledOutput ${solver1} -case ${domain1} -parallel -coupled : -np ${numProcs} ${solver2} -case ${domain2} -parallel -coupled
++mpirun -np ${numProcs} ${solver1} -case ${domain1} -parallel -coupled : -np ${numProcs} ${solver2} -case ${domain2} -parallel -coupled
++
++# postprocess domain1
++cd ${domain1}
++./Allpostprocess
++cd ..
++
++# postprocess domain2
++cd ${domain2}
++./Allpostprocess
++cd ..
++
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/0/T ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/0/T
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/0/T	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/0/T	2019-08-22 17:15:32.691815300 +0100
+@@ -0,0 +1,46 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       volScalarField;
++    object      T;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++dimensions      [0 0 0 1 0 0 0];
++
++internalField   uniform 273;
++
++boundaryField
++{
++    patch1
++    {
++        type            zeroGradient;
++    }
++
++    patch2
++    {
++        type            fixedValue;
++        value           uniform 273;
++    }
++
++    patch3
++    {
++        type            zeroGradient;
++    }
++
++    patch4
++    {
++        type            fixedValue;
++        value           uniform 573;
++    }
++}
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allclean ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allclean
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allclean	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allclean	2019-08-22 17:15:32.703344900 +0100
+@@ -0,0 +1,11 @@
++#!/bin/sh
++cd ${0%/*} || exit 1    # Run from this directory
++
++# Source tutorial clean functions
++. $WM_PROJECT_DIR/bin/tools/CleanFunctions
++
++cleanCase
++rm -rf EnSight Ensight Fieldview > /dev/null 2>&1
++rm -f constant/polyMesh/boundary > /dev/null 2>&1
++
++#------------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allpostprocess ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allpostprocess
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allpostprocess	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allpostprocess	2019-08-22 17:15:32.714375200 +0100
+@@ -0,0 +1,14 @@
++#!/bin/sh
++cd ${0%/*} || exit 1    # Run from this directory
++
++# Source tutorial run functions
++. $WM_PROJECT_DIR/bin/tools/RunFunctions
++
++# Get application name
++application=$(getApplication)
++
++runApplication foamToEnsight
++runApplication foamToEnsightParts
++runApplication foamToVTK
++
++#------------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allpreprocess ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allpreprocess
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allpreprocess	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allpreprocess	2019-08-22 17:15:32.723899500 +0100
+@@ -0,0 +1,24 @@
++#!/bin/sh
++cd ${0%/*} || exit 1    # Run from this directory
++
++# Source tutorial run functions
++. $WM_PROJECT_DIR/bin/tools/RunFunctions
++
++# Get application name
++application=$(getApplication)
++
++runAnsysToFoam()
++{
++    if [ -f log.ansysToFoam ]
++    then
++        echo "ansysToFoam already run on $PWD: remove log file to re-run"
++    else
++        echo "Running ansysToFoam: converting mesh $1"
++        ansysToFoam $1 -scale $2 > log.ansysToFoam 2>&1
++    fi
++}
++
++runAnsysToFoam flange.ans 0.001
++runApplication decomposePar
++
++#------------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allrun ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allrun
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allrun	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/Allrun	2019-08-22 17:15:32.732423000 +0100
+@@ -0,0 +1,28 @@
++#!/bin/sh
++cd ${0%/*} || exit 1    # Run from this directory
++
++# Source tutorial run functions
++. $WM_PROJECT_DIR/bin/tools/RunFunctions
++
++# Get application name
++application=$(getApplication)
++
++runAnsysToFoam()
++{
++    if [ -f log.ansysToFoam ]
++    then
++        echo "ansysToFoam already run on $PWD: remove log file to re-run"
++    else
++        echo "Running ansysToFoam: converting mesh $1"
++        ansysToFoam $1 -scale $2 > log.ansysToFoam 2>&1
++    fi
++}
++
++runAnsysToFoam flange.ans 0.001
++runApplication decomposePar
++runParallel $(getApplication)
++runApplication foamToEnsight
++runApplication foamToEnsightParts
++runApplication foamToVTK
++
++#------------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/constant/transportProperties ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/constant/transportProperties
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/constant/transportProperties	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/constant/transportProperties	2019-08-22 17:15:32.741947800 +0100
+@@ -0,0 +1,21 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "constant";
++    object      transportProperties;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++DT              DT [0 2 -1 0 0 0 0] 4e-05;
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/controlDict ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/controlDict
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/controlDict	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/controlDict	2019-08-22 17:15:32.770023100 +0100
+@@ -0,0 +1,49 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      controlDict;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++application     laplacianFoam;
++
++startFrom       latestTime;
++
++startTime       0;
++
++stopAt          endTime;
++
++endTime         3;
++
++deltaT          0.005;
++
++writeControl    runTime;
++
++writeInterval   0.1;
++
++purgeWrite      0;
++
++writeFormat     ascii;
++
++writePrecision  6;
++
++writeCompression off;
++
++timeFormat      general;
++
++timePrecision   6;
++
++runTimeModifiable true;
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/couplingDict ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/couplingDict
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/couplingDict	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/couplingDict	2019-08-22 17:15:32.780049400 +0100
+@@ -0,0 +1,58 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      couplingDict;
++}
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++couplingName	domain1; //Coupling domain name
++refLength	1;  //Length reference value for anything used in the coupling interfaces (default=1)
++refTime		1;  //Time reference value for anything used in the coupling interfaces (default=1)
++
++couplingConfigurations
++( 
++    TwoDInterfaces //2D coupling interfaces
++    {
++    }
++
++    ThreeDInterfaces //3D coupling interfaces
++    {
++        interface_1
++	    {
++	        smartSend				yes; 
++		    sending					yes;
++		    //domainSendStart		(0 0 0); //Refines smartSend domain values if provided
++		    //domainSendEnd			(1 1 1); //Refines smartSend domain values if provided
++		    receiving				yes;
++		    //domainReceiveStart	(0 0 0); //Refines smartSend domain values if provided
++		    //domainReceiveEnd		(1 1 1); //Refines smartSend domain values if provided   
++		    iterationCoupling		no; //If set to yes then integer time-stamps are expected to be used in MUI commits (don't forget to update MUI time_type in the library)  
++	    }	
++
++        interface_2
++		{
++	    	smartSend				yes; 
++		    sending					yes;
++		    //domainSendStart		(0 0 0); //Refines smartSend domain values if provided
++		    //domainSendEnd			(1 1 1); //Refines smartSend domain values if provided
++		    receiving				yes;
++		    //domainReceiveStart	(0 0 0); //Refines smartSend domain values if provided
++		    //domainReceiveEnd		(1 1 1); //Refines smartSend domain values if provided   
++		    iterationCoupling		no; //If set to yes then integer time-stamps are expected to be used in MUI commits (don't forget to update MUI time_type in the library)
++		}
++    }
++);
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/decomposeParDict ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/decomposeParDict
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/decomposeParDict	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/decomposeParDict	2019-08-22 17:15:32.789575100 +0100
+@@ -0,0 +1,22 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      decomposeParDict;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++numberOfSubdomains 2;
++
++method          scotch;
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/fvSchemes ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/fvSchemes
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/fvSchemes	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/fvSchemes	2019-08-22 17:15:32.798611800 +0100
+@@ -0,0 +1,51 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      fvSchemes;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++ddtSchemes
++{
++    default         Euler;
++}
++
++gradSchemes
++{
++    default         Gauss linear;
++    grad(T)         Gauss linear;
++}
++
++divSchemes
++{
++    default         none;
++}
++
++laplacianSchemes
++{
++    default         none;
++    laplacian(DT,T) Gauss linear corrected;
++}
++
++interpolationSchemes
++{
++    default         linear;
++}
++
++snGradSchemes
++{
++    default         corrected;
++}
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/fvSolution ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/fvSolution
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/fvSolution	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain1/system/fvSolution	2019-08-22 17:15:32.808124400 +0100
+@@ -0,0 +1,35 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      fvSolution;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++solvers
++{
++    T
++    {
++        solver          PCG;
++        preconditioner  DIC;
++        tolerance       1e-06;
++        relTol          0;
++    }
++}
++
++SIMPLE
++{
++    nNonOrthogonalCorrectors 2;
++}
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/0/T ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/0/T
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/0/T	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/0/T	2019-08-22 17:15:32.818653900 +0100
+@@ -0,0 +1,46 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       volScalarField;
++    object      T;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++dimensions      [0 0 0 1 0 0 0];
++
++internalField   uniform 273;
++
++boundaryField
++{
++    patch1
++    {
++        type            zeroGradient;
++    }
++
++    patch2
++    {
++        type            fixedValue;
++        value           uniform 273;
++    }
++
++    patch3
++    {
++        type            zeroGradient;
++    }
++
++    patch4
++    {
++        type            fixedValue;
++        value           uniform 573;
++    }
++}
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allclean ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allclean
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allclean	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allclean	2019-08-22 17:15:32.828712700 +0100
+@@ -0,0 +1,11 @@
++#!/bin/sh
++cd ${0%/*} || exit 1    # Run from this directory
++
++# Source tutorial clean functions
++. $WM_PROJECT_DIR/bin/tools/CleanFunctions
++
++cleanCase
++rm -rf EnSight Ensight Fieldview > /dev/null 2>&1
++rm -f constant/polyMesh/boundary > /dev/null 2>&1
++
++#------------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allpostprocess ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allpostprocess
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allpostprocess	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allpostprocess	2019-08-22 17:15:32.838205300 +0100
+@@ -0,0 +1,14 @@
++#!/bin/sh
++cd ${0%/*} || exit 1    # Run from this directory
++
++# Source tutorial run functions
++. $WM_PROJECT_DIR/bin/tools/RunFunctions
++
++# Get application name
++application=$(getApplication)
++
++runApplication foamToEnsight
++runApplication foamToEnsightParts
++runApplication foamToVTK
++
++#------------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allpreprocess ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allpreprocess
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allpreprocess	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allpreprocess	2019-08-22 17:15:32.846728500 +0100
+@@ -0,0 +1,24 @@
++#!/bin/sh
++cd ${0%/*} || exit 1    # Run from this directory
++
++# Source tutorial run functions
++. $WM_PROJECT_DIR/bin/tools/RunFunctions
++
++# Get application name
++application=$(getApplication)
++
++runAnsysToFoam()
++{
++    if [ -f log.ansysToFoam ]
++    then
++        echo "ansysToFoam already run on $PWD: remove log file to re-run"
++    else
++        echo "Running ansysToFoam: converting mesh $1"
++        ansysToFoam $1 -scale $2 > log.ansysToFoam 2>&1
++    fi
++}
++
++runAnsysToFoam flange.ans 0.001
++runApplication decomposePar
++
++#------------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allrun ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allrun
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allrun	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/Allrun	2019-08-22 17:15:32.855752000 +0100
+@@ -0,0 +1,28 @@
++#!/bin/sh
++cd ${0%/*} || exit 1    # Run from this directory
++
++# Source tutorial run functions
++. $WM_PROJECT_DIR/bin/tools/RunFunctions
++
++# Get application name
++application=$(getApplication)
++
++runAnsysToFoam()
++{
++    if [ -f log.ansysToFoam ]
++    then
++        echo "ansysToFoam already run on $PWD: remove log file to re-run"
++    else
++        echo "Running ansysToFoam: converting mesh $1"
++        ansysToFoam $1 -scale $2 > log.ansysToFoam 2>&1
++    fi
++}
++
++runAnsysToFoam flange.ans 0.001
++runApplication decomposePar
++runParallel $(getApplication)
++runApplication foamToEnsight
++runApplication foamToEnsightParts
++runApplication foamToVTK
++
++#------------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/constant/transportProperties ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/constant/transportProperties
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/constant/transportProperties	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/constant/transportProperties	2019-08-22 17:15:32.865779500 +0100
+@@ -0,0 +1,21 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "constant";
++    object      transportProperties;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++DT              DT [0 2 -1 0 0 0 0] 4e-05;
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/controlDict ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/controlDict
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/controlDict	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/controlDict	2019-08-22 17:15:32.894857800 +0100
+@@ -0,0 +1,49 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      controlDict;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++application     laplacianFoam;
++
++startFrom       latestTime;
++
++startTime       0;
++
++stopAt          endTime;
++
++endTime         3;
++
++deltaT          0.005;
++
++writeControl    runTime;
++
++writeInterval   0.1;
++
++purgeWrite      0;
++
++writeFormat     ascii;
++
++writePrecision  6;
++
++writeCompression off;
++
++timeFormat      general;
++
++timePrecision   6;
++
++runTimeModifiable true;
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/couplingDict ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/couplingDict
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/couplingDict	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/couplingDict	2019-08-22 17:15:32.903379300 +0100
+@@ -0,0 +1,58 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      couplingDict;
++}
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++couplingName	domain2; //Coupling domain name
++refLength	1;  //Length reference value for anything used in the coupling interfaces (default=1)
++refTime		1;  //Time reference value for anything used in the coupling interfaces (default=1)
++
++couplingConfigurations
++( 
++    TwoDInterfaces //2D coupling interfaces
++    {
++    }
++
++    ThreeDInterfaces //3D coupling interfaces
++    {
++        interface_1
++	    {
++	        smartSend				yes; 
++		    sending					yes;
++		    //domainSendStart		(0 0 0); //Refines smartSend domain values if provided
++		    //domainSendEnd			(1 1 1); //Refines smartSend domain values if provided
++		    receiving				yes;
++		    //domainReceiveStart	(0 0 0); //Refines smartSend domain values if provided
++		    //domainReceiveEnd		(1 1 1); //Refines smartSend domain values if provided   
++		    iterationCoupling		no; //If set to yes then integer time-stamps are expected to be used in MUI commits (don't forget to update MUI time_type in the library)  
++	    }	
++
++        interface_2
++		{
++	    	smartSend				yes; 
++		    sending					yes;
++		    //domainSendStart		(0 0 0); //Refines smartSend domain values if provided
++		    //domainSendEnd			(1 1 1); //Refines smartSend domain values if provided
++		    receiving				yes;
++		    //domainReceiveStart	(0 0 0); //Refines smartSend domain values if provided
++		    //domainReceiveEnd		(1 1 1); //Refines smartSend domain values if provided   
++		    iterationCoupling		no; //If set to yes then integer time-stamps are expected to be used in MUI commits (don't forget to update MUI time_type in the library)
++		}
++    }
++);
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/decomposeParDict ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/decomposeParDict
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/decomposeParDict	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/decomposeParDict	2019-08-22 17:15:32.916915300 +0100
+@@ -0,0 +1,22 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      decomposeParDict;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++numberOfSubdomains 2;
++
++method          scotch;
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/fvSchemes ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/fvSchemes
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/fvSchemes	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/fvSchemes	2019-08-22 17:15:32.926441100 +0100
+@@ -0,0 +1,51 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      fvSchemes;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++ddtSchemes
++{
++    default         Euler;
++}
++
++gradSchemes
++{
++    default         Gauss linear;
++    grad(T)         Gauss linear;
++}
++
++divSchemes
++{
++    default         none;
++}
++
++laplacianSchemes
++{
++    default         none;
++    laplacian(DT,T) Gauss linear corrected;
++}
++
++interpolationSchemes
++{
++    default         linear;
++}
++
++snGradSchemes
++{
++    default         corrected;
++}
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/fvSolution ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/fvSolution
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/fvSolution	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/flange_domain2/system/fvSolution	2019-08-22 17:15:32.936468400 +0100
+@@ -0,0 +1,35 @@
++/*--------------------------------*- C++ -*----------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Version:  6
++     \\/     M anipulation  |
++\*---------------------------------------------------------------------------*/
++FoamFile
++{
++    version     2.0;
++    format      ascii;
++    class       dictionary;
++    location    "system";
++    object      fvSolution;
++}
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++solvers
++{
++    T
++    {
++        solver          PCG;
++        preconditioner  DIC;
++        tolerance       1e-06;
++        relTol          0;
++    }
++}
++
++SIMPLE
++{
++    nNonOrthogonalCorrectors 2;
++}
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/README ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/README
+--- ../originalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/README	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/tutorials/basic/laplacianFoam/coupled_example/README	2019-08-22 17:15:32.945491600 +0100
+@@ -0,0 +1,16 @@
++This is a test case for coupling two instances of laplacianFoam
++
++This example case does the following:
++
++    1. Runs two instances of laplacianFoam simultaneously, each using 2 MPI process locally.
++    2. Each instance is considered to be a seperate domain (named domain1 and domain2 respectively).
++    3. Two 3D MUI coupling interfaces are created (interface_1 and interface_2) and each solver connects to them at the start using the createCouplings.H file.
++    4. When the main control object is instantiated by each laplacianFoam solver, a single data value is pushed and fetched through each interface and the result printed to the console.
++    5. All console output is placed into files in the “Logs” folder.
++
++There are a number of scripts in the base of the case to ease running:
++
++    1. Allclean: This completely cleans the cases in the case folders.
++    2. AllrunCoupled: This completely cleans, executes the coupled case (using mpirun) and postprocesses the cases in each case folder.
++
++The coupling control dictionaries are located at system/couplingDict (this is described in greater detail in the README-MUI document in the base of the repository).

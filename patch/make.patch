@@ -1,0 +1,2331 @@
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/basic/laplacianFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/basic/laplacianFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/basic/laplacianFoam/Make/options	2019-08-22 17:00:58.959329700 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/basic/laplacianFoam/Make/options	2019-08-22 17:15:31.196156500 +0100
+@@ -1,8 +1,16 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/basic/potentialFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/basic/potentialFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/basic/potentialFoam/Make/options	2019-08-22 17:00:58.985371400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/basic/potentialFoam/Make/options	2019-08-22 17:15:31.206183500 +0100
+@@ -1,9 +1,17 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools \
+     -lsampling
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/basic/scalarTransportFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/basic/scalarTransportFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/basic/scalarTransportFoam/Make/options	2019-08-22 17:00:59.011440300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/basic/scalarTransportFoam/Make/options	2019-08-22 17:15:31.216209600 +0100
+@@ -1,9 +1,17 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/chemFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/chemFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/chemFoam/Make/options	2019-08-22 17:00:59.442592600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/chemFoam/Make/options	2019-08-22 17:15:31.226738900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/reactionThermo/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+@@ -9,6 +16,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lchemistryModel \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/coldEngineFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/coldEngineFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/coldEngineFoam/Make/options	2019-08-22 17:00:59.525313600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/coldEngineFoam/Make/options	2019-08-22 17:15:31.237266200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../XiFoam/XiEngineFoam \
+     -I../XiFoam \
+@@ -15,6 +22,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lengine \
+     -lturbulenceModels \
+     -lcompressibleTurbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/fireFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/fireFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/fireFoam/Make/options	2019-08-22 17:00:59.560436100 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/fireFoam/Make/options	2019-08-22 17:15:31.248295300 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude \
+@@ -25,6 +32,7 @@
+     -I$(LIB_SRC)/ODE/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/PDRFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/PDRFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/PDRFoam/Make/options	2019-08-22 17:00:59.042050800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/PDRFoam/Make/options	2019-08-22 17:15:31.259328100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -IXiModels/transport \
+     -IXiModels/fixed \
+     -IXiModels/algebraic \
+@@ -34,6 +41,7 @@
+     -I$(LIB_SRC)/triSurface/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lengine \
+     -lmeshTools \
+     -lturbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/Make/options	2019-08-22 17:00:59.642628000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/Make/options	2019-08-22 17:15:31.269852800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude \
+@@ -13,6 +20,7 @@
+     -I$(LIB_SRC)/combustionModels/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/rhoReactingBuoyantFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/rhoReactingBuoyantFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/rhoReactingBuoyantFoam/Make/options	2019-08-22 17:00:59.689753600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/rhoReactingBuoyantFoam/Make/options	2019-08-22 17:15:31.281885900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I$(FOAM_SOLVERS)/combustion/reactingFoam \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+@@ -16,6 +23,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/rhoReactingFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/rhoReactingFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/rhoReactingFoam/Make/options	2019-08-22 17:00:59.726368600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/reactingFoam/rhoReactingFoam/Make/options	2019-08-22 17:15:31.293945100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I$(FOAM_SOLVERS)/combustion/reactingFoam \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+@@ -16,6 +23,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/XiFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/XiFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/XiFoam/Make/options	2019-08-22 17:00:59.356892400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/XiFoam/Make/options	2019-08-22 17:15:31.304946900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/engine/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+@@ -12,6 +19,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lengine \
+     -lturbulenceModels \
+     -lcompressibleTurbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/combustion/XiFoam/XiEngineFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/combustion/XiFoam/XiEngineFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/combustion/XiFoam/XiEngineFoam/Make/options	2019-08-22 17:00:59.373439000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/combustion/XiFoam/XiEngineFoam/Make/options	2019-08-22 17:15:31.316478800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude \
+@@ -13,6 +20,7 @@
+     -I$(LIB_SRC)/thermophysicalModels/laminarFlameSpeed/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lsampling \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/BCs/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/BCs/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/BCs/Make/options	2019-08-22 17:00:59.768491900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/BCs/Make/options	2019-08-22 17:15:31.328549700 +0100
+@@ -1,10 +1,18 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/Make/options	2019-08-22 17:00:59.841186600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/Make/options	2019-08-22 17:15:31.339538300 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -IBCs/lnInclude \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+@@ -10,6 +17,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lcompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/rhoCentralDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/rhoCentralDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/rhoCentralDyMFoam/Make/options	2019-08-22 17:00:59.879289000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoCentralFoam/rhoCentralDyMFoam/Make/options	2019-08-22 17:15:31.351590200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I../BCs/lnInclude \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+@@ -12,6 +19,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lcompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoPimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoPimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoPimpleFoam/Make/options	2019-08-22 17:00:59.910358500 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoPimpleFoam/Make/options	2019-08-22 17:15:31.362600800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+@@ -11,6 +18,7 @@
+     -I$(LIB_SRC)/dynamicMesh/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoSimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoSimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoSimpleFoam/Make/options	2019-08-22 17:00:59.965490900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoSimpleFoam/Make/options	2019-08-22 17:15:31.373632400 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+@@ -9,6 +16,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoSimpleFoam/rhoPorousSimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoSimpleFoam/rhoPorousSimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/rhoSimpleFoam/rhoPorousSimpleFoam/Make/options	2019-08-22 17:01:00.002590900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/rhoSimpleFoam/rhoPorousSimpleFoam/Make/options	2019-08-22 17:15:31.384659800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I.. \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+@@ -11,6 +18,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/Make/options	2019-08-22 17:01:00.042696600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/Make/options	2019-08-22 17:15:31.396190900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+@@ -8,6 +15,7 @@
+     -I$(LIB_SRC)/finiteVolume/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/sonicDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/sonicDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/sonicDyMFoam/Make/options	2019-08-22 17:01:00.074782100 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/sonicDyMFoam/Make/options	2019-08-22 17:15:31.407220000 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I../../rhoPimpleFoam \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+@@ -13,6 +20,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/sonicLiquidFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/sonicLiquidFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/sonicLiquidFoam/Make/options	2019-08-22 17:01:00.100885900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/compressible/sonicFoam/sonicLiquidFoam/Make/options	2019-08-22 17:15:31.418750600 +0100
+@@ -1,7 +1,15 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/discreteMethods/dsmc/dsmcFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/discreteMethods/dsmc/dsmcFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/discreteMethods/dsmc/dsmcFoam/Make/options	2019-08-22 17:01:00.138953600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/discreteMethods/dsmc/dsmcFoam/Make/options	2019-08-22 17:15:31.430286400 +0100
+@@ -1,10 +1,18 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+     -I$(LIB_SRC)/lagrangian/DSMC/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lmeshTools \
+     -lfiniteVolume \
+     -llagrangian \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/discreteMethods/molecularDynamics/mdEquilibrationFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/discreteMethods/molecularDynamics/mdEquilibrationFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/discreteMethods/molecularDynamics/mdEquilibrationFoam/Make/options	2019-08-22 17:01:00.161031800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/discreteMethods/molecularDynamics/mdEquilibrationFoam/Make/options	2019-08-22 17:15:31.441813100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/lagrangian/molecularDynamics/molecule/lnInclude \
+     -I$(LIB_SRC)/lagrangian/molecularDynamics/potential/lnInclude \
+     -I$(LIB_SRC)/lagrangian/molecularDynamics/molecularMeasurements/lnInclude \
+@@ -7,6 +14,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lmeshTools \
+     -lfiniteVolume \
+     -llagrangian \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/discreteMethods/molecularDynamics/mdFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/discreteMethods/molecularDynamics/mdFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/discreteMethods/molecularDynamics/mdFoam/Make/options	2019-08-22 17:01:00.183071500 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/discreteMethods/molecularDynamics/mdFoam/Make/options	2019-08-22 17:15:31.453379100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/lagrangian/molecularDynamics/molecule/lnInclude \
+     -I$(LIB_SRC)/lagrangian/molecularDynamics/potential/lnInclude \
+     -I$(LIB_SRC)/lagrangian/molecularDynamics/molecularMeasurements/lnInclude \
+@@ -7,6 +14,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lmeshTools \
+     -lfiniteVolume \
+     -llagrangian \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/DNS/dnsFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/DNS/dnsFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/DNS/dnsFoam/Make/options	2019-08-22 17:00:58.923706000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/DNS/dnsFoam/Make/options	2019-08-22 17:15:31.463871300 +0100
+@@ -1,9 +1,17 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/randomProcesses/lnInclude \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lrandomProcesses \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/electromagnetics/electrostaticFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/electromagnetics/electrostaticFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/electromagnetics/electrostaticFoam/Make/options	2019-08-22 17:01:00.204629200 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/electromagnetics/electrostaticFoam/Make/options	2019-08-22 17:15:31.474900900 +0100
+@@ -1,7 +1,15 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/electromagnetics/magneticFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/electromagnetics/magneticFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/electromagnetics/magneticFoam/Make/options	2019-08-22 17:01:00.225184300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/electromagnetics/magneticFoam/Make/options	2019-08-22 17:15:31.485930100 +0100
+@@ -1,7 +1,15 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/electromagnetics/mhdFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/electromagnetics/mhdFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/electromagnetics/mhdFoam/Make/options	2019-08-22 17:01:00.250752500 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/electromagnetics/mhdFoam/Make/options	2019-08-22 17:15:31.496458600 +0100
+@@ -1,7 +1,15 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/financial/financialFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/financial/financialFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/financial/financialFoam/Make/options	2019-08-22 17:01:00.292865000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/financial/financialFoam/Make/options	2019-08-22 17:15:31.506986700 +0100
+@@ -1,9 +1,17 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools \
+     -lsampling
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantBoussinesqPimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantBoussinesqPimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantBoussinesqPimpleFoam/Make/options	2019-08-22 17:01:00.313921200 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantBoussinesqPimpleFoam/Make/options	2019-08-22 17:15:31.518016000 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../buoyantBoussinesqSimpleFoam \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+@@ -11,6 +18,7 @@
+     -I$(LIB_SRC)/finiteVolume/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantBoussinesqSimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantBoussinesqSimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantBoussinesqSimpleFoam/Make/options	2019-08-22 17:01:00.349043600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantBoussinesqSimpleFoam/Make/options	2019-08-22 17:15:31.530048200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -9,6 +16,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantPimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantPimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantPimpleFoam/Make/options	2019-08-22 17:01:00.393664300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantPimpleFoam/Make/options	2019-08-22 17:15:31.541579300 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+@@ -9,6 +16,7 @@
+     -I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lsampling \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantSimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantSimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantSimpleFoam/Make/options	2019-08-22 17:01:00.433771500 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/buoyantSimpleFoam/Make/options	2019-08-22 17:15:31.552608700 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+@@ -9,6 +16,7 @@
+     -I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lsampling \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/chtMultiRegionFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/chtMultiRegionFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/chtMultiRegionFoam/Make/options	2019-08-22 17:01:00.469837900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/chtMultiRegionFoam/Make/options	2019-08-22 17:15:31.564640800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I./fluid \
+     -I./solid \
+@@ -24,6 +31,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/thermoFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/thermoFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/heatTransfer/thermoFoam/Make/options	2019-08-22 17:01:00.623268800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/heatTransfer/thermoFoam/Make/options	2019-08-22 17:15:31.575670400 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/sampling/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+@@ -9,6 +16,7 @@
+     -I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lsampling \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/adjointShapeOptimizationFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/adjointShapeOptimizationFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/adjointShapeOptimizationFoam/Make/options	2019-08-22 17:01:00.649347000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/adjointShapeOptimizationFoam/Make/options	2019-08-22 17:15:31.586197500 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -IadjointOutletPressure \
+     -IadjointOutletVelocity \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+@@ -10,6 +17,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/boundaryFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/boundaryFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/boundaryFoam/Make/options	2019-08-22 17:01:00.705997600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/boundaryFoam/Make/options	2019-08-22 17:15:31.597740400 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -8,6 +15,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/icoFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/icoFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/icoFoam/Make/options	2019-08-22 17:01:00.742094800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/icoFoam/Make/options	2019-08-22 17:15:31.608257500 +0100
+@@ -1,7 +1,15 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/nonNewtonianIcoFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/nonNewtonianIcoFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/nonNewtonianIcoFoam/Make/options	2019-08-22 17:01:00.763121700 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/nonNewtonianIcoFoam/Make/options	2019-08-22 17:15:31.618785500 +0100
+@@ -1,10 +1,18 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels \
+     -I$(LIB_SRC)/transportModels/incompressible/singlePhaseTransportModel \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lincompressibleTransportModels \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/pimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/pimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/pimpleFoam/Make/options	2019-08-22 17:01:00.784198800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/pimpleFoam/Make/options	2019-08-22 17:15:31.630316200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -10,6 +17,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/pimpleFoam/SRFPimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/pimpleFoam/SRFPimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/pimpleFoam/SRFPimpleFoam/Make/options	2019-08-22 17:01:00.796210300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/pimpleFoam/SRFPimpleFoam/Make/options	2019-08-22 17:15:31.641880500 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I.. \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+@@ -10,6 +17,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/pisoFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/pisoFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/pisoFoam/Make/options	2019-08-22 17:01:00.852861600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/pisoFoam/Make/options	2019-08-22 17:15:31.652876900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -8,6 +15,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/shallowWaterFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/shallowWaterFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/shallowWaterFoam/Make/options	2019-08-22 17:01:00.888992000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/shallowWaterFoam/Make/options	2019-08-22 17:15:31.663905300 +0100
+@@ -1,7 +1,15 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/Make/options	2019-08-22 17:01:00.921044100 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/Make/options	2019-08-22 17:15:31.674935900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -9,6 +16,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/porousSimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/porousSimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/porousSimpleFoam/Make/options	2019-08-22 17:01:00.978698000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/porousSimpleFoam/Make/options	2019-08-22 17:15:31.685973700 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
+@@ -10,6 +17,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/SRFSimpleFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/SRFSimpleFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/SRFSimpleFoam/Make/options	2019-08-22 17:01:00.933106000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/incompressible/simpleFoam/SRFSimpleFoam/Make/options	2019-08-22 17:15:31.697996400 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
+@@ -10,6 +17,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/coalChemistryFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/coalChemistryFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/coalChemistryFoam/Make/options	2019-08-22 17:01:01.153665800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/coalChemistryFoam/Make/options	2019-08-22 17:15:31.710030000 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+@@ -23,6 +30,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools \
+     -lturbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/Make/options	2019-08-22 17:01:01.055402900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/Make/options	2019-08-22 17:15:31.724067800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I../DPMTurbulenceModels/lnInclude \
+     -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+@@ -21,6 +28,7 @@
+     -I$(LIB_SRC)/dynamicMesh/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -llagrangian \
+     -llagrangianIntermediate \
+     -llagrangianTurbulence \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/MPPICDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/MPPICDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/MPPICDyMFoam/Make/options	2019-08-22 17:01:01.042869500 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/MPPICDyMFoam/Make/options	2019-08-22 17:15:31.736099400 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I../.. \
+     -I../../DPMTurbulenceModels/lnInclude \
+@@ -22,6 +29,7 @@
+     -I$(LIB_SRC)/dynamicMesh/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMTurbulenceModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMTurbulenceModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMTurbulenceModels/Make/options	2019-08-22 17:01:01.091499400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/DPMTurbulenceModels/Make/options	2019-08-22 17:15:31.747630100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/Make/options	2019-08-22 17:01:01.119073100 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/Make/options	2019-08-22 17:15:31.758157900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I./DPMTurbulenceModels/lnInclude \
+     -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+     -I$(LIB_SRC)/lagrangian/intermediate/lnInclude \
+@@ -18,6 +25,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -llagrangian \
+     -llagrangianIntermediate \
+     -llagrangianTurbulence \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/MPPICFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/MPPICFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/MPPICFoam/Make/options	2019-08-22 17:01:01.108544800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/DPMFoam/MPPICFoam/Make/options	2019-08-22 17:15:31.769187300 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I../DPMTurbulenceModels/lnInclude \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+@@ -19,6 +26,7 @@
+     -I$(LIB_SRC)/regionModels/surfaceFilmModels/lnInclude \
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lmeshTools \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/icoUncoupledKinematicParcelDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/icoUncoupledKinematicParcelDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/icoUncoupledKinematicParcelDyMFoam/Make/options	2019-08-22 17:01:01.228895200 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/icoUncoupledKinematicParcelDyMFoam/Make/options	2019-08-22 17:15:31.782222200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+     -I$(LIB_SRC)/lagrangian/intermediate/lnInclude \
+@@ -20,6 +27,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -llagrangian \
+     -llagrangianIntermediate \
+     -llagrangianTurbulence \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/Make/options	2019-08-22 17:01:01.207810200 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/Make/options	2019-08-22 17:15:31.793753300 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+     -I$(LIB_SRC)/lagrangian/intermediate/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
+@@ -16,6 +23,7 @@
+     -I$(LIB_SRC)/regionModels/surfaceFilmModels/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -llagrangian \
+     -llagrangianIntermediate \
+     -llagrangianTurbulence \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/reactingParcelFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/reactingParcelFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/reactingParcelFoam/Make/options	2019-08-22 17:01:01.254965100 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/reactingParcelFoam/Make/options	2019-08-22 17:15:31.804810000 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../reactingParcelFoam \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+@@ -24,6 +31,7 @@
+     -I$(FOAM_SOLVERS)/combustion/reactingFoam
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lfvOptions \
+     -lsampling \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/reactingParcelFoam/simpleReactingParcelFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/reactingParcelFoam/simpleReactingParcelFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/reactingParcelFoam/simpleReactingParcelFoam/Make/options	2019-08-22 17:01:01.324651900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/reactingParcelFoam/simpleReactingParcelFoam/Make/options	2019-08-22 17:15:31.816845100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+@@ -25,6 +32,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools \
+     -lturbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/engineFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/engineFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/engineFoam/Make/options	2019-08-22 17:01:01.406370300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/engineFoam/Make/options	2019-08-22 17:15:31.829849800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../sprayDyMFoam \
+     -I.. \
+@@ -28,6 +35,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools \
+     -lsampling \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/Make/options	2019-08-22 17:01:01.370247800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/Make/options	2019-08-22 17:15:31.840878200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../reactingParcelFoam \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+@@ -24,6 +31,7 @@
+     -I$(LIB_SRC)/combustionModels/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lcompressibleTurbulenceModels \
+     -llagrangian \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/sprayDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/sprayDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/sprayDyMFoam/Make/options	2019-08-22 17:01:01.441965300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/sprayFoam/sprayDyMFoam/Make/options	2019-08-22 17:15:31.852910800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I../../reactingParcelFoam \
+     -I../../../compressible/rhoPimpleFoam \
+@@ -28,6 +35,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lcompressibleTurbulenceModels \
+     -llagrangian \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/Make/options	2019-08-22 17:01:01.468537200 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/Make/options	2019-08-22 17:15:31.866448300 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+     -I$(LIB_SRC)/lagrangian/intermediate/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
+@@ -14,6 +21,7 @@
+     -I$(LIB_SRC)/regionModels/surfaceFilmModels/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -llagrangian \
+     -llagrangianIntermediate \
+     -llagrangianTurbulence \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/uncoupledKinematicParcelDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/uncoupledKinematicParcelDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/uncoupledKinematicParcelDyMFoam/Make/options	2019-08-22 17:01:01.485052600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/uncoupledKinematicParcelDyMFoam/Make/options	2019-08-22 17:15:31.881486900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I$(LIB_SRC)/lagrangian/basic/lnInclude \
+     -I$(LIB_SRC)/lagrangian/intermediate/lnInclude \
+@@ -17,6 +24,7 @@
+     -I$(LIB_SRC)/dynamicFvMesh/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -llagrangian \
+     -llagrangianIntermediate \
+     -llagrangianTurbulence \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/cavitatingFoam/cavitatingDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/cavitatingFoam/cavitatingDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/cavitatingFoam/cavitatingDyMFoam/Make/options	2019-08-22 17:01:01.561255000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/cavitatingFoam/cavitatingDyMFoam/Make/options	2019-08-22 17:15:31.894020300 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \
+@@ -13,6 +20,7 @@
+     -I$(LIB_SRC)/dynamicFvMesh/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lbarotropicCompressibilityModel \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/cavitatingFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/cavitatingFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/cavitatingFoam/Make/options	2019-08-22 17:01:01.540214000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/cavitatingFoam/Make/options	2019-08-22 17:15:31.904549200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+     -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
+@@ -10,6 +17,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+     -lbarotropicCompressibilityModel \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/compressibleInterDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/compressibleInterDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/compressibleInterDyMFoam/Make/options	2019-08-22 17:01:01.727728400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/compressibleInterDyMFoam/Make/options	2019-08-22 17:15:31.916581800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I.. \
+     -I../../VoF \
+@@ -17,6 +24,7 @@
+     -I$(LIB_SRC)/finiteVolume/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -ltwoPhaseMixtureThermo \
+     -ltwoPhaseSurfaceTension \
+     -lcompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/compressibleInterFilmFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/compressibleInterFilmFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/compressibleInterFilmFoam/Make/options	2019-08-22 17:01:01.753798800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/compressibleInterFilmFoam/Make/options	2019-08-22 17:15:31.928112200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -IVoFPatchTransfer \
+     -IVoFSolidificationMeltingSource \
+@@ -27,6 +34,7 @@
+     -I$(LIB_SRC)/fvOptions/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -ltwoPhaseMixtureThermo \
+     -ltwoPhaseSurfaceTension \
+     -lcompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/Make/options	2019-08-22 17:01:01.659044900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/Make/options	2019-08-22 17:15:31.939643600 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../VoF \
+     -ItwoPhaseMixtureThermo \
+@@ -14,6 +21,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -ltwoPhaseMixtureThermo \
+     -ltwoPhaseSurfaceTension \
+     -lcompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/surfaceTensionModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/surfaceTensionModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/surfaceTensionModels/Make/options	2019-08-22 17:01:01.837493100 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/surfaceTensionModels/Make/options	2019-08-22 17:15:31.951174400 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/interfaceProperties/lnInclude \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+@@ -7,6 +14,7 @@
+     -I$(LIB_SRC)/finiteVolume/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -linterfaceProperties \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/twoPhaseMixtureThermo/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/twoPhaseMixtureThermo/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/twoPhaseMixtureThermo/Make/options	2019-08-22 17:01:01.861063700 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/twoPhaseMixtureThermo/Make/options	2019-08-22 17:15:31.962203300 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \
+@@ -6,6 +13,7 @@
+     -I$(LIB_SRC)/finiteVolume/lnInclude
+ 
+ LIB_LIBS = \
++	$(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/VoFphaseCompressibleTurbulenceModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/VoFphaseCompressibleTurbulenceModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/VoFphaseCompressibleTurbulenceModels/Make/options	2019-08-22 17:01:01.681577600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleInterFoam/VoFphaseCompressibleTurbulenceModels/Make/options	2019-08-22 17:15:31.973734200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../twoPhaseMixtureThermo \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+@@ -11,6 +18,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -ltwoPhaseMixtureThermo \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleMultiphaseInterFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleMultiphaseInterFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleMultiphaseInterFoam/Make/options	2019-08-22 17:01:01.892156900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleMultiphaseInterFoam/Make/options	2019-08-22 17:15:31.985293600 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../VoF \
+     -I../interFoam \
+@@ -13,6 +20,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lmultiphaseMixtureThermo \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleMultiphaseInterFoam/multiphaseMixtureThermo/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleMultiphaseInterFoam/multiphaseMixtureThermo/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleMultiphaseInterFoam/multiphaseMixtureThermo/Make/options	2019-08-22 17:01:01.925256700 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/compressibleMultiphaseInterFoam/multiphaseMixtureThermo/Make/options	2019-08-22 17:15:31.997797800 +0100
+@@ -1,10 +1,18 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/Make/options	2019-08-22 17:01:01.982409000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/Make/options	2019-08-22 17:15:32.008327100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -IincompressibleTwoPhaseInteractingMixture \
+     -ImixtureViscosityModels/lnInclude \
+     -I./relativeVelocityModels/lnInclude \
+@@ -12,6 +19,7 @@
+     -I$(LIB_SRC)/TurbulenceModels/compressible/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -ldriftFluxTransportModels \
+     -ldriftFluxRelativeVelocityModels \
+     -lfiniteVolume \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/mixtureViscosityModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/mixtureViscosityModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/mixtureViscosityModels/Make/options	2019-08-22 17:01:02.049086900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/mixtureViscosityModels/Make/options	2019-08-22 17:15:32.019356900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../incompressibleTwoPhaseInteractingMixture \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -6,6 +13,7 @@
+     -I$(LIB_SRC)/transportModels/incompressible/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -ltwoPhaseMixture \
+     -lincompressibleTransportModels \
+     -lfiniteVolume
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/relativeVelocityModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/relativeVelocityModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/relativeVelocityModels/Make/options	2019-08-22 17:01:02.103704600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/driftFluxFoam/relativeVelocityModels/Make/options	2019-08-22 17:15:32.030916100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../incompressibleTwoPhaseInteractingMixture \
+     -I../mixtureViscosityModels/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -8,6 +15,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lincompressibleTransportModels \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interFoam/interMixingFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interFoam/interMixingFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interFoam/interMixingFoam/Make/options	2019-08-22 17:01:02.189433600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interFoam/interMixingFoam/Make/options	2019-08-22 17:15:32.041916200 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I.. \
+     -I../../VoF \
+@@ -17,6 +24,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -ltwoPhaseMixture \
+     -ltwoPhaseProperties \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interFoam/Make/options	2019-08-22 17:01:02.148826100 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interFoam/Make/options	2019-08-22 17:15:32.052945800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../VoF \
+     -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -13,6 +20,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -limmiscibleIncompressibleTwoPhaseMixture \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/interPhaseChangeDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/interPhaseChangeDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/interPhaseChangeDyMFoam/Make/options	2019-08-22 17:01:02.314267400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/interPhaseChangeDyMFoam/Make/options	2019-08-22 17:15:32.064000700 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -14,6 +21,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lphaseChangeTwoPhaseMixtures \
+     -ltwoPhaseMixture \
+     -linterfaceProperties \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/Make/options	2019-08-22 17:01:02.278170900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/Make/options	2019-08-22 17:15:32.075506000 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+     -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
+@@ -11,6 +18,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lphaseChangeTwoPhaseMixtures \
+     -ltwoPhaseMixture \
+     -linterfaceProperties \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/phaseChangeTwoPhaseMixtures/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/phaseChangeTwoPhaseMixtures/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/phaseChangeTwoPhaseMixtures/Make/options	2019-08-22 17:01:02.360921900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/interPhaseChangeFoam/phaseChangeTwoPhaseMixtures/Make/options	2019-08-22 17:15:32.087035900 +0100
+@@ -1,10 +1,18 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+     -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
+     -I$(LIB_SRC)/finiteVolume/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -ltwoPhaseMixture \
+     -ltwoPhaseProperties \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/interfacialModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/interfacialModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/interfacialModels/Make/options	2019-08-22 17:01:02.469682600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/interfacialModels/Make/options	2019-08-22 17:15:32.099068300 +0100
+@@ -1,6 +1,14 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../multiphaseSystem/lnInclude \
+     -I$(LIB_SRC)/finiteVolume/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lmultiphaseSystem
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/Make/options	2019-08-22 17:01:02.434087400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/Make/options	2019-08-22 17:15:32.141844000 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -ImultiphaseSystem/lnInclude \
+     -ImultiphaseFixedFluxPressure \
+     -IinterfacialModels/lnInclude \
+@@ -13,6 +20,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lmultiphaseSystem \
+     -linterfaceProperties \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/multiphaseSystem/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/multiphaseSystem/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/multiphaseSystem/Make/options	2019-08-22 17:01:02.636128400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseEulerFoam/multiphaseSystem/Make/options	2019-08-22 17:15:32.152372100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../interfacialModels/lnInclude \
+     -IalphaContactAngle \
+     -I$(LIB_SRC)/transportModels \
+@@ -8,6 +15,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -linterfaceProperties \
+     -lincompressibleTransportModels \
+     -lfiniteVolume \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseInterFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseInterFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseInterFoam/Make/options	2019-08-22 17:01:02.738429600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseInterFoam/Make/options	2019-08-22 17:15:32.165407500 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../VoF \
+     -I../interFoam \
+@@ -14,6 +21,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lmultiphaseInterFoam \
+     -linterfaceProperties \
+     -lincompressibleTransportModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseInterFoam/multiphaseMixture/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseInterFoam/multiphaseMixture/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseInterFoam/multiphaseMixture/Make/options	2019-08-22 17:01:02.760961300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/multiphaseInterFoam/multiphaseMixture/Make/options	2019-08-22 17:15:32.178442500 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -IalphaContactAngle \
+     -I$(LIB_SRC)/transportModels \
+     -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
+@@ -7,6 +14,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -linterfaceProperties \
+     -lincompressibleTransportModels \
+     -lfiniteVolume \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/potentialFreeSurfaceFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/potentialFreeSurfaceFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/potentialFreeSurfaceFoam/Make/options	2019-08-22 17:01:02.805124500 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/potentialFreeSurfaceFoam/Make/options	2019-08-22 17:15:32.189472600 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude \
+     -I$(LIB_SRC)/transportModels \
+@@ -9,6 +16,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lincompressibleTransportModels \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/potentialFreeSurfaceFoam/potentialFreeSurfaceDyMFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/potentialFreeSurfaceFoam/potentialFreeSurfaceDyMFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/potentialFreeSurfaceFoam/potentialFreeSurfaceDyMFoam/Make/options	2019-08-22 17:01:02.831223200 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/potentialFreeSurfaceFoam/potentialFreeSurfaceDyMFoam/Make/options	2019-08-22 17:15:32.200500700 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I.. \
+     -I../../interFoam \
+     -I$(LIB_SRC)/TurbulenceModels/turbulenceModels/lnInclude \
+@@ -13,6 +20,7 @@
+ 
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lincompressibleTransportModels \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/derivedFvPatchFields/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/derivedFvPatchFields/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/derivedFvPatchFields/Make/options	2019-08-22 17:01:02.876314700 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/derivedFvPatchFields/Make/options	2019-08-22 17:15:32.212062600 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../phaseSystems/lnInclude \
+     -I../interfacialModels/lnInclude\
+     -I../interfacialCompositionModels/lnInclude \
+@@ -12,6 +19,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lreactingPhaseSystem \
+     -lreactingEulerianInterfacialModels \
+     -lreactingEulerianInterfacialCompositionModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/functionObjects/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/functionObjects/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/functionObjects/Make/options	2019-08-22 17:01:03.125981800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/functionObjects/Make/options	2019-08-22 17:15:32.223061700 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+@@ -7,5 +14,6 @@
+     -I../phaseSystems/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lfieldFunctionObjects \
+     -lfiniteVolume
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/interfacialCompositionModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/interfacialCompositionModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/interfacialCompositionModels/Make/options	2019-08-22 17:01:03.159600900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/interfacialCompositionModels/Make/options	2019-08-22 17:15:32.234592600 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../phaseSystems/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/specie/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+@@ -15,6 +22,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lfluidThermophysicalModels \
+     -lreactionThermophysicalModels \
+     -lspecie
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/interfacialModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/interfacialModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/interfacialModels/Make/options	2019-08-22 17:01:03.408761900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/interfacialModels/Make/options	2019-08-22 17:15:32.246624000 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../phaseSystems/lnInclude \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+@@ -10,6 +17,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/phaseSystems/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/phaseSystems/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/phaseSystems/Make/options	2019-08-22 17:01:04.236473600 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/phaseSystems/Make/options	2019-08-22 17:15:32.258154900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../interfacialModels/lnInclude \
+     -I../interfacialCompositionModels/lnInclude \
+     -I../derivedFvPatchFields/lnInclude \
+@@ -15,4 +22,5 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lcombustionModels
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/Make/options	2019-08-22 17:01:04.902759300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/Make/options	2019-08-22 17:15:32.270215100 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -ImultiphaseSystem/lnInclude \
+     -I../phaseSystems/lnInclude \
+     -I../interfacialModels/lnInclude \
+@@ -14,6 +21,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lreactingPhaseSystem \
+     -lreactingMultiphaseSystem \
+     -lreactingEulerianInterfacialModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/multiphaseCompressibleTurbulenceModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/multiphaseCompressibleTurbulenceModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/multiphaseCompressibleTurbulenceModels/Make/options	2019-08-22 17:01:04.930834100 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/multiphaseCompressibleTurbulenceModels/Make/options	2019-08-22 17:15:32.282218900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../multiphaseSystem/lnInclude \
+     -I../../phaseSystems/lnInclude \
+     -I../../interfacialModels/lnInclude\
+@@ -16,6 +23,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lreactingPhaseSystem \
+     -lreactingMultiphaseSystem \
+     -lreactingEulerianInterfacialModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/multiphaseSystem/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/multiphaseSystem/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/multiphaseSystem/Make/options	2019-08-22 17:01:04.948353300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingMultiphaseEulerFoam/multiphaseSystem/Make/options	2019-08-22 17:15:32.293750800 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../../interfacialModels/lnInclude \
+     -I../../interfacialCompositionModels/lnInclude \
+     -I../../phaseSystems/lnInclude \
+@@ -18,5 +25,6 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lcombustionModels \
+     -lreactingPhaseSystem
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/Make/options	2019-08-22 17:01:05.048120000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/Make/options	2019-08-22 17:15:32.305280900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -ItwoPhaseSystem/lnInclude \
+     -I../phaseSystems/lnInclude \
+     -I../interfacialModels/lnInclude \
+@@ -14,6 +21,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lreactingPhaseSystem \
+     -lreactingTwoPhaseSystem \
+     -lreactingEulerianInterfacialModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/twoPhaseCompressibleTurbulenceModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/twoPhaseCompressibleTurbulenceModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/twoPhaseCompressibleTurbulenceModels/Make/options	2019-08-22 17:01:05.119337700 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/twoPhaseCompressibleTurbulenceModels/Make/options	2019-08-22 17:15:32.317315500 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../twoPhaseSystem/lnInclude \
+     -I../../phaseSystems/lnInclude \
+     -I../../interfacialModels/lnInclude\
+@@ -14,6 +21,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lreactingPhaseSystem \
+     -lreactingTwoPhaseSystem \
+     -lreactingEulerianInterfacialModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/twoPhaseSystem/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/twoPhaseSystem/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/twoPhaseSystem/Make/options	2019-08-22 17:01:05.487293000 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/reactingEulerFoam/reactingTwoPhaseEulerFoam/twoPhaseSystem/Make/options	2019-08-22 17:15:32.328843500 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../../interfacialModels/lnInclude \
+     -I../../interfacialCompositionModels/lnInclude \
+     -I../../phaseSystems/lnInclude \
+@@ -17,5 +24,6 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lcombustionModels \
+     -lreactingPhaseSystem
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoLiquidMixingFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoLiquidMixingFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoLiquidMixingFoam/Make/options	2019-08-22 17:01:05.640730700 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoLiquidMixingFoam/Make/options	2019-08-22 17:15:32.340374600 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../VoF \
+     -I$(LIB_SRC)/transportModels/twoPhaseMixture/lnInclude \
+@@ -11,6 +18,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -ltwoPhaseMixture \
+     -lturbulenceModels \
+     -lincompressibleTurbulenceModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/interfacialModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/interfacialModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/interfacialModels/Make/options	2019-08-22 17:01:05.757514700 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/interfacialModels/Make/options	2019-08-22 17:15:32.351915500 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+@@ -10,6 +17,7 @@
+     -I../twoPhaseSystem/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTwoPhaseSystem \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/Make/options	2019-08-22 17:01:05.719413400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/Make/options	2019-08-22 17:15:32.363937400 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
+     -I$(LIB_SRC)/transportModels/incompressible/lnInclude \
+@@ -13,6 +20,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/phaseCompressibleTurbulenceModels/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/phaseCompressibleTurbulenceModels/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/phaseCompressibleTurbulenceModels/Make/options	2019-08-22 17:01:06.403266800 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/phaseCompressibleTurbulenceModels/Make/options	2019-08-22 17:15:32.374966700 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../twoPhaseSystem/lnInclude \
+     -I../interfacialModels/lnInclude\
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+@@ -11,6 +18,7 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+     -lspecie \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/twoPhaseSystem/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/twoPhaseSystem/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/twoPhaseSystem/Make/options	2019-08-22 17:01:06.817376400 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/multiphase/twoPhaseEulerFoam/twoPhaseSystem/Make/options	2019-08-22 17:15:32.386497900 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I../twoPhaseSystem \
+     -I../interfacialModels/lnInclude \
+     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
+@@ -12,6 +19,7 @@
+     -I$(LIB_SRC)/sampling/lnInclude
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lincompressibleTransportModels \
+     -lcompressibleTransportModels \
+     -lfluidThermophysicalModels \
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/stressAnalysis/solidDisplacementFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/stressAnalysis/solidDisplacementFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/stressAnalysis/solidDisplacementFoam/Make/options	2019-08-22 17:01:07.022926300 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/stressAnalysis/solidDisplacementFoam/Make/options	2019-08-22 17:15:32.397555800 +0100
+@@ -1,9 +1,17 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -ItractionDisplacement \
+     -I$(LIB_SRC)/finiteVolume/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/applications/solvers/stressAnalysis/solidEquilibriumDisplacementFoam/Make/options ../finalVersion/OpenFOAM-6/applications/solvers/stressAnalysis/solidEquilibriumDisplacementFoam/Make/options
+--- ../originalVersion/OpenFOAM-6/applications/solvers/stressAnalysis/solidEquilibriumDisplacementFoam/Make/options	2019-08-22 17:01:07.084088900 +0100
++++ ../finalVersion/OpenFOAM-6/applications/solvers/stressAnalysis/solidEquilibriumDisplacementFoam/Make/options	2019-08-22 17:15:32.408558500 +0100
+@@ -1,4 +1,11 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I. \
+     -I../solidDisplacementFoam \
+     -ItractionDisplacementCorrection \
+@@ -6,5 +13,6 @@
+     -I$(LIB_SRC)/meshTools/lnInclude
+ 
+ EXE_LIBS = \
++    $(PLIBS) \
+     -lfiniteVolume \
+     -lmeshTools

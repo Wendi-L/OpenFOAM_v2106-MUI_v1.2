@@ -1,0 +1,1949 @@
+diff -ruN ../originalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/include/fvCFD.H ../finalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/include/fvCFD.H
+--- ../originalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/include/fvCFD.H	2019-08-22 17:01:31.299205400 +0100
++++ ../finalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/include/fvCFD.H	2019-08-22 17:15:32.487768600 +0100
+@@ -2,6 +2,7 @@
+ #define fvCFD_H
+ 
+ #include "parRun.H"
++#include "cplRun.H"
+ 
+ #include "Time.H"
+ #include "fvMesh.H"
+diff -ruN ../originalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/include/fvCoupling.H ../finalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/include/fvCoupling.H
+--- ../originalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/include/fvCoupling.H	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/include/fvCoupling.H	2019-08-22 17:15:32.495288600 +0100
+@@ -0,0 +1,7 @@
++#ifndef fvCoupling_H
++#define fvCoupling_H
++
++#include "coupling2d.H"
++#include "coupling3d.H"
++
++#endif
+
+######## WL work here ###############################
+
+diff -ruN ../originalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.C ../finalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.C
+--- ../originalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.C	2019-08-22 17:01:31.626078700 +0100
++++ ../finalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.C	2019-08-22 17:15:32.502308400 +0100
+@@ -47,6 +47,142 @@
+     printResidualControls();
+ }
+ 
++Foam::simpleControl::simpleControl(fvMesh& mesh, const word& algorithmName, couplingInterface2d& twoDInterfaces, couplingInterface3d& threeDInterfaces)
++:
++    fluidSolutionControl(mesh, algorithmName),
++    singleRegionConvergenceControl
++    (
++        static_cast<singleRegionSolutionControl&>(*this)
++    )
++{
++    read();
++    printResidualControls();
++
++#ifdef USE_MUI
++    //- If there are 2D interfaces defined in couplingDict then iterate through
++    if(twoDInterfaces.interfaces != NULL)
++    {
++		if(twoDInterfaces.interfaces->size() != 0)
++		{
++			mui::point2d send_point, rcv_point;
++
++			//Push values
++			for(size_t i=0; i<twoDInterfaces.interfaces->size(); i++)
++			{
++				//- Create 2D sending point at location [0, 0]
++				send_point[0] = 0;
++				send_point[1] = 0;
++
++				//- Push value of 100 to MUI interface with label "data" at sending point at the current solver time
++				twoDInterfaces.interfaces->getInterface(i)->push("data", send_point, static_cast<scalar>(100));
++
++				//- Create 2D sending point at location [0.01, 0.01]
++				send_point[0] = 0.01;
++				send_point[1] = 0.01;
++
++				//- Push value of 200 to MUI interface with label "data" at sending point at the current solver time
++				twoDInterfaces.interfaces->getInterface(i)->push("data", send_point, static_cast<scalar>(200));
++
++				//- Commit the pushed value to the interface at current solver time
++				twoDInterfaces.interfaces->getInterface(i)->commit(static_cast<scalar>(1));
++			}
++
++			mui::sampler_exact2d<scalar> spatial_sampler;
++			mui::chrono_sampler_exact2d chrono_sampler;
++
++			//Fetch values
++			for(size_t i=0; i<twoDInterfaces.interfaces->size(); i++)
++			{
++				//- Create 2D receiving point at location [0, 0]
++				rcv_point[0] = 0;
++				rcv_point[1] = 0;
++
++				//- Blocking fetch for value passed through interface from coupled solver
++				scalar rcv_value = twoDInterfaces.interfaces->getInterface(i)->fetch("data", rcv_point, static_cast<scalar>(1), spatial_sampler, chrono_sampler);
++
++				std::cout << "[MUI] Received value through 2D interface ("
++						  << twoDInterfaces.interfaces->getInterfaceName(i) << "): "
++						  << rcv_value << std::endl;
++
++				//- Create 2D receiving point at location [0.01, 0.01]
++				rcv_point[0] = 0.01;
++				rcv_point[1] = 0.01;
++
++				//- Blocking fetch for value passed through interface from coupled solver
++				rcv_value = twoDInterfaces.interfaces->getInterface(i)->fetch("data", rcv_point, static_cast<scalar>(1), spatial_sampler, chrono_sampler);
++
++				std::cout << "[MUI] Received value through 2D interface ("
++						  << twoDInterfaces.interfaces->getInterfaceName(i) << "): "
++						  << rcv_value << std::endl;
++			}
++		}
++    }
++
++    //- If there are 3D interfaces defined in couplingDict then iterate through
++    if(threeDInterfaces.interfaces != NULL)
++	{
++		if(threeDInterfaces.interfaces->size() != 0)
++		{
++			mui::point3d send_point, rcv_point;
++
++			//Push values
++			for(size_t i=0; i<threeDInterfaces.interfaces->size(); i++)
++			{
++				//- Create 3D sending point at location [0, 0, 0]
++				send_point[0] = 0;
++				send_point[1] = 0;
++				send_point[2] = 0;
++
++				//- Push value of 100 to MUI interface with label "data" at sending point at the current solver time
++				threeDInterfaces.interfaces->getInterface(i)->push("data", send_point, static_cast<scalar>(100));
++
++				//- Create 3D sending point at location [0.01, 0.01, 0.01]
++				send_point[0] = 0.01;
++				send_point[1] = 0.01;
++				send_point[2] = 0.01;
++
++				//- Push value of 200 to MUI interface with label "data" at sending point at the current solver time
++				threeDInterfaces.interfaces->getInterface(i)->push("data", send_point, static_cast<scalar>(200));
++
++				//- Commit the pushed values to the interface at current solver time
++				threeDInterfaces.interfaces->getInterface(i)->commit(static_cast<scalar>(1));
++			}
++
++			mui::sampler_exact3d<scalar> spatial_sampler;
++			mui::chrono_sampler_exact3d chrono_sampler;
++
++			//Fetch values
++			for(size_t i=0; i<threeDInterfaces.interfaces->size(); i++)
++			{
++				//- Create 3D receiving point at location [0, 0, 0]
++				rcv_point[0] = 0;
++				rcv_point[1] = 0;
++				rcv_point[2] = 0;
++
++				//- Blocking fetch for value passed through interface from coupled solver
++				scalar rcv_value = threeDInterfaces.interfaces->getInterface(i)->fetch("data", rcv_point, static_cast<scalar>(1), spatial_sampler, chrono_sampler);
++
++				std::cout << "[MUI] Received value through 3D interface ("
++						  << threeDInterfaces.interfaces->getInterfaceName(i) << "): "
++						  << rcv_value << std::endl;
++
++				//- Create 3D receiving point at location [0.01, 0.01, 0.01]
++				rcv_point[0] = 0.01;
++				rcv_point[1] = 0.01;
++				rcv_point[2] = 0.01;
++
++				//- Blocking fetch for value passed through interface from coupled solver
++				rcv_value = threeDInterfaces.interfaces->getInterface(i)->fetch("data", rcv_point, static_cast<scalar>(1), spatial_sampler, chrono_sampler);
++
++				std::cout << "[MUI] Received value through 3D interface ("
++						  << threeDInterfaces.interfaces->getInterfaceName(i) << "): "
++						  << rcv_value << std::endl;
++			}
++		}
++	}
++#endif
++}
++
+ 
+ // * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
+ 
+diff -ruN ../originalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.H ../finalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.H
+--- ../originalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.H	2019-08-22 17:01:31.631091800 +0100
++++ ../finalVersion/OpenFOAM-6/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.H	2019-08-22 17:15:32.510329100 +0100
+@@ -50,6 +50,10 @@
+ #include "fluidSolutionControl.H"
+ #include "singleRegionConvergenceControl.H"
+ 
++#ifdef USE_MUI // included if the switch -DUSE_MUI included during compilation.
++  #include "fvCoupling.H"
++#endif
++
+ #define SIMPLE_CONTROL
+ 
+ // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+@@ -77,7 +81,20 @@
+     // Constructors
+ 
+         //- Construct from a mesh and the name of the algorithm
+-        simpleControl(fvMesh& mesh, const word& algorithmName="SIMPLE");
++        simpleControl
++        (
++		    fvMesh& mesh,
++		    const word& algorithmName="SIMPLE"
++        );
++
++        //- Construct from a mesh and the name of the algorithm
++        simpleControl
++        (
++		    fvMesh& mesh,
++		    const word& algorithmName,
++            couplingInterface2d& twoDInterfaces,
++            couplingInterface3d& threeDInterfaces
++        );
+ 
+ 
+     //- Destructor
+diff -ruN ../originalVersion/OpenFOAM-6/src/finiteVolume/Make/options ../finalVersion/OpenFOAM-6/src/finiteVolume/Make/options
+--- ../originalVersion/OpenFOAM-6/src/finiteVolume/Make/options	2019-08-22 17:01:30.982859900 +0100
++++ ../finalVersion/OpenFOAM-6/src/finiteVolume/Make/options	2019-08-22 17:15:32.518851400 +0100
+@@ -1,8 +1,16 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(LIB_SRC)/triSurface/lnInclude \
+     -I$(LIB_SRC)/meshTools/lnInclude \
+ 
+ LIB_LIBS = \
++    $(PLIBS) \
+     -lOpenFOAM \
+     -ltriSurface \
+     -lmeshTools
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling2d/coupling2d.C ../finalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling2d/coupling2d.C
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling2d/coupling2d.C	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling2d/coupling2d.C	2019-08-22 17:15:32.528878100 +0100
+@@ -0,0 +1,158 @@
++/*---------------------------------------------------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
++     \\/     M anipulation  |
++-------------------------------------------------------------------------------
++License
++    This file is part of OpenFOAM.
++
++    OpenFOAM is free software: you can redistribute it and/or modify it
++    under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 3 of the License, or
++    (at your option) any later version.
++
++    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
++    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++    for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
++
++\*---------------------------------------------------------------------------*/
++
++#include "coupling2d.H"
++
++// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
++
++// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
++
++Foam::coupling2d::coupling2d
++(
++    word domainName,
++    List<word>& interfaceNames,
++    List<bool>& send,
++    List<bool>& receive,
++    List<bool>& smart_send,
++    List<vector>& dom_send_start,
++    List<vector>& dom_send_end,
++    List<vector>& dom_rcv_start,
++    List<vector>& dom_rcv_end,
++    List<bool>& iterationCoupling
++)
++:
++    domainName_(domainName),
++    interfaceNames_(interfaceNames),
++    send_(send),
++    receive_(receive),
++    smart_send_(smart_send),
++    dom_send_start_(dom_send_start),
++    dom_send_end_(dom_send_end),
++    dom_rcv_start_(dom_rcv_start),
++    dom_rcv_end_(dom_rcv_end),
++    iterationCoupling_(iterationCoupling)
++{
++    interfaces_.setSize(interfaceNames.size());
++
++    forAll(interfaceNames_, i)
++    {
++        interfaceDetails newInterface;
++        std::vector<std::string> interfaceList;
++
++        newInterface.interfaceName = interfaceNames_[i];
++        interfaceList.emplace_back(newInterface.interfaceName); //Need std::vector copy for MUI create_uniface function
++        newInterface.send = send_[i];
++        newInterface.receive = receive_[i];
++        newInterface.smartSend = smart_send_[i];
++        newInterface.dom_send_start = dom_send_start_[i];
++        newInterface.dom_send_end = dom_send_end_[i];
++        newInterface.dom_rcv_start = dom_rcv_start_[i];
++        newInterface.dom_rcv_end = dom_rcv_end_[i];
++        newInterface.iterationCoupling = iterationCoupling[i];
++
++        #ifdef USE_MUI
++            auto returnInterfaces = mui::create_uniface<mui::config_2d>(static_cast<std::string>(domainName_), interfaceList);
++            newInterface.mui_interface = returnInterfaces[0].release();
++        #endif
++
++        interfaces_[i] = newInterface;
++    }
++}
++
++// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
++
++Foam::coupling2d::~coupling2d()
++{
++    #ifdef USE_MUI
++        forAll(interfaces_, iface)
++        {
++            delete interfaces_[iface].mui_interface;
++        }
++    #endif
++}
++
++// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
++
++#ifdef USE_MUI
++mui::uniface<mui::config_2d>* Foam::coupling2d::getInterface(int index) const
++{
++    return interfaces_[index].mui_interface;
++}
++#endif
++
++size_t Foam::coupling2d::size() const
++{
++    return interfaces_.size();
++}
++
++Foam::word Foam::coupling2d::getInterfaceName(int index) const
++{
++    return interfaces_[index].interfaceName;
++}
++
++bool Foam::coupling2d::getInterfaceSendStatus(int index) const
++{
++    return interfaces_[index].send;
++}
++
++bool Foam::coupling2d::getInterfaceReceiveStatus(int index) const
++{
++    return interfaces_[index].receive;
++}
++
++bool Foam::coupling2d::getInterfaceSmartSendStatus(int index) const
++{
++    return interfaces_[index].smartSend;
++}
++
++Foam::vector Foam::coupling2d::getInterfaceSendDomStart(int index) const
++{
++    return interfaces_[index].dom_send_start;
++}
++
++Foam::vector Foam::coupling2d::getInterfaceSendDomEnd(int index) const
++{
++    return interfaces_[index].dom_send_end;
++}
++
++Foam::vector Foam::coupling2d::getInterfaceReceiveDomStart(int index) const
++{
++    return interfaces_[index].dom_rcv_start;
++}
++
++Foam::vector Foam::coupling2d::getInterfaceReceiveDomEnd(int index) const
++{
++    return interfaces_[index].dom_rcv_end;
++}
++
++bool Foam::coupling2d::getInterfaceItCouplingStatus(int index) const
++{
++    return interfaces_[index].iterationCoupling;
++}
++
++// * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling2d/coupling2d.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling2d/coupling2d.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling2d/coupling2d.H	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling2d/coupling2d.H	2019-08-22 17:15:32.535395500 +0100
+@@ -0,0 +1,141 @@
++/*---------------------------------------------------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
++     \\/     M anipulation  |
++-------------------------------------------------------------------------------
++License
++    This file is part of OpenFOAM.
++
++    OpenFOAM is free software: you can redistribute it and/or modify it
++    under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 3 of the License, or
++    (at your option) any later version.
++
++    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
++    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++    for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
++
++Class
++    Foam::coupling2d
++
++Description
++
++SourceFiles
++    coupling2d.C
++
++\*---------------------------------------------------------------------------*/
++
++#ifndef coupling2d_H
++#define coupling2d_H
++
++#include "vector.H"
++#include "scalar.H"
++#include "List.H"
++
++// NOTE:
++// MUI header included if the switch -DUSE_MUI included during compilation.
++#ifdef USE_MUI
++    #include "mui.h"
++#endif
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++namespace Foam
++{
++
++/*---------------------------------------------------------------------------*\
++                         Class coupling2d Declaration
++\*---------------------------------------------------------------------------*/
++
++class coupling2d
++{
++    // Private data
++private:
++    struct interfaceDetails
++    {
++        word interfaceName;
++        #ifdef USE_MUI
++          mui::uniface<mui::config_2d>* mui_interface;
++        #endif
++        bool send;
++        bool receive;
++        bool smartSend;
++        vector dom_send_start;
++        vector dom_send_end;
++        vector dom_rcv_start;
++        vector dom_rcv_end;
++        bool iterationCoupling;
++    };
++
++    word domainName_;
++    List<coupling2d::interfaceDetails> interfaces_;
++    List<word> interfaceNames_;
++    List<bool> send_;
++    List<bool> receive_;
++    List<bool> smart_send_;
++    List<vector> dom_send_start_;
++    List<vector> dom_send_end_;
++    List<vector> dom_rcv_start_;
++    List<vector> dom_rcv_end_;
++    List<bool> iterationCoupling_;
++
++public:
++
++    // Constructors
++
++        coupling2d
++        (
++            word domainName,
++            List<word>& interfaceNames,
++            List<bool>& send,
++            List<bool>& receive,
++            List<bool>& smart_send,
++            List<vector>& dom_send_start,
++            List<vector>& dom_send_end,
++            List<vector>& dom_rcv_start,
++            List<vector>& dom_rcv_end,
++            List<bool>& iterationCoupling
++        );
++
++    // Destructor
++
++        ~coupling2d();
++
++    // Member Functions
++#ifdef USE_MUI
++        mui::uniface<mui::config_2d>* getInterface(int index) const;
++#endif
++        size_t size() const;
++        word getInterfaceName(int index) const;
++        bool getInterfaceSendStatus(int index) const;
++        bool getInterfaceReceiveStatus(int index) const;
++        bool getInterfaceSmartSendStatus(int index) const;
++        bool getInterfaceExtentsStatus(int index) const;
++        vector getInterfaceSendDomStart(int index) const;
++        vector getInterfaceSendDomEnd(int index) const;
++        vector getInterfaceReceiveDomStart(int index) const;
++        vector getInterfaceReceiveDomEnd(int index) const;
++        bool getInterfaceItCouplingStatus(int index) const;
++};
++
++struct couplingInterface2d
++{
++    word domainName;
++    scalar refLength;
++    scalar refTime;
++    coupling2d* interfaces;
++};
++
++} // End namespace Foam
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++#endif
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling3d/coupling3d.C ../finalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling3d/coupling3d.C
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling3d/coupling3d.C	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling3d/coupling3d.C	2019-08-22 17:15:32.542414400 +0100
+@@ -0,0 +1,158 @@
++/*---------------------------------------------------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
++     \\/     M anipulation  |
++-------------------------------------------------------------------------------
++License
++    This file is part of OpenFOAM.
++
++    OpenFOAM is free software: you can redistribute it and/or modify it
++    under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 3 of the License, or
++    (at your option) any later version.
++
++    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
++    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++    for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
++
++\*---------------------------------------------------------------------------*/
++
++#include "coupling3d.H"
++
++// * * * * * * * * * * * * * Private Member Functions  * * * * * * * * * * * //
++
++// * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
++
++Foam::coupling3d::coupling3d
++(
++    word domainName,
++    List<word>& interfaceNames,
++    List<bool>& send,
++    List<bool>& receive,
++    List<bool>& smart_send,
++    List<vector>& dom_send_start,
++    List<vector>& dom_send_end,
++    List<vector>& dom_rcv_start,
++    List<vector>& dom_rcv_end,
++    List<bool>& iterationCoupling
++)
++:
++    domainName_(domainName),
++    interfaceNames_(interfaceNames),
++    send_(send),
++    receive_(receive),
++    smart_send_(smart_send),
++    dom_send_start_(dom_send_start),
++    dom_send_end_(dom_send_end),
++    dom_rcv_start_(dom_rcv_start),
++    dom_rcv_end_(dom_rcv_end),
++    iterationCoupling_(iterationCoupling)
++{
++    interfaces_.setSize(interfaceNames_.size());
++
++    forAll(interfaceNames_, i)
++    {
++        interfaceDetails newInterface;
++        std::vector<std::string> interfaceList;
++
++        newInterface.interfaceName = interfaceNames_[i];
++        interfaceList.emplace_back(newInterface.interfaceName); //Need std::vector copy for MUI create_uniface function
++        newInterface.send = send_[i];
++        newInterface.receive = receive_[i];
++        newInterface.smartSend = smart_send_[i];
++        newInterface.dom_send_start = dom_send_start_[i];
++        newInterface.dom_send_end = dom_send_end_[i];
++        newInterface.dom_rcv_start = dom_rcv_start_[i];
++        newInterface.dom_rcv_end = dom_rcv_end_[i];
++        newInterface.iterationCoupling = iterationCoupling[i];
++
++        #ifdef USE_MUI
++            auto returnInterfaces_ = mui::create_uniface<mui::config_3d>(static_cast<std::string>(domainName_), interfaceList);
++            newInterface.mui_interface = returnInterfaces_[0].release();
++        #endif
++
++        interfaces_[i] = newInterface;
++    }
++}
++
++// * * * * * * * * * * * * * * * * Destructor  * * * * * * * * * * * * * * * //
++
++Foam::coupling3d::~coupling3d()
++{
++    #ifdef USE_MUI
++        forAll(interfaces_, iface)
++        {
++            delete interfaces_[iface].mui_interface;
++        }
++    #endif
++}
++
++// * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
++
++#ifdef USE_MUI
++mui::uniface<mui::config_3d>* Foam::coupling3d::getInterface(int index) const
++{
++    return interfaces_[index].mui_interface;
++}
++#endif
++
++size_t Foam::coupling3d::size() const
++{
++    return interfaces_.size();
++}
++
++Foam::word Foam::coupling3d::getInterfaceName(int index) const
++{
++    return interfaces_[index].interfaceName;
++}
++
++bool Foam::coupling3d::getInterfaceSendStatus(int index) const
++{
++    return interfaces_[index].send;
++}
++
++bool Foam::coupling3d::getInterfaceReceiveStatus(int index) const
++{
++    return interfaces_[index].receive;
++}
++
++bool Foam::coupling3d::getInterfaceSmartSendStatus(int index) const
++{
++    return interfaces_[index].smartSend;
++}
++
++Foam::vector Foam::coupling3d::getInterfaceSendDomStart(int index) const
++{
++    return interfaces_[index].dom_send_start;
++}
++
++Foam::vector Foam::coupling3d::getInterfaceSendDomEnd(int index) const
++{
++    return interfaces_[index].dom_send_end;
++}
++
++Foam::vector Foam::coupling3d::getInterfaceReceiveDomStart(int index) const
++{
++    return interfaces_[index].dom_rcv_start;
++}
++
++Foam::vector Foam::coupling3d::getInterfaceReceiveDomEnd(int index) const
++{
++    return interfaces_[index].dom_rcv_end;
++}
++
++bool Foam::coupling3d::getInterfaceItCouplingStatus(int index) const
++{
++    return interfaces_[index].iterationCoupling;
++}
++
++// * * * * * * * * * * * * * * * Member Operators  * * * * * * * * * * * * * //
++
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling3d/coupling3d.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling3d/coupling3d.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling3d/coupling3d.H	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/coupling/coupling3d/coupling3d.H	2019-08-22 17:15:32.548932700 +0100
+@@ -0,0 +1,142 @@
++/*---------------------------------------------------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
++     \\/     M anipulation  |
++-------------------------------------------------------------------------------
++License
++    This file is part of OpenFOAM.
++
++    OpenFOAM is free software: you can redistribute it and/or modify it
++    under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 3 of the License, or
++    (at your option) any later version.
++
++    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
++    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++    for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
++
++Class
++    Foam::coupling3d
++
++Description
++
++SourceFiles
++    coupling3d.C
++
++\*---------------------------------------------------------------------------*/
++
++#ifndef coupling3d_H
++#define coupling3d_H
++
++#include "vector.H"
++#include "scalar.H"
++#include "List.H"
++
++// NOTE:
++// MUI header included if the switch -DUSE_MUI included during compilation.
++#ifdef USE_MUI
++    #include "mui.h"
++#endif
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++namespace Foam
++{
++
++/*---------------------------------------------------------------------------*\
++                         Class coupling3d Declaration
++\*---------------------------------------------------------------------------*/
++
++class coupling3d
++{
++    // Private data
++private:
++    struct interfaceDetails
++    {
++        word interfaceName;
++        #ifdef USE_MUI
++          mui::uniface<mui::config_3d>* mui_interface;
++        #endif
++        bool send;
++        bool receive;
++        bool smartSend;
++        vector dom_send_start;
++        vector dom_send_end;
++        vector dom_rcv_start;
++        vector dom_rcv_end;
++        bool iterationCoupling;
++    };
++
++    word domainName_;
++    List<coupling3d::interfaceDetails> interfaces_;
++    List<word> interfaceNames_;
++    List<bool> send_;
++    List<bool> receive_;
++    List<bool> smart_send_;
++    List<vector> dom_send_start_;
++    List<vector> dom_send_end_;
++    List<vector> dom_rcv_start_;
++    List<vector> dom_rcv_end_;
++    List<bool> iterationCoupling_;
++
++public:
++
++    // Constructors
++
++        //- Construct without explicit domain size
++        coupling3d
++        (
++            word domainName,
++            List<word>& interfaceNames,
++            List<bool>& send,
++            List<bool>& receive,
++            List<bool>& smart_send,
++            List<vector>& dom_send_start,
++            List<vector>& dom_send_end,
++            List<vector>& dom_rcv_start,
++            List<vector>& dom_rcv_end,
++            List<bool>& iterationCoupling
++        );
++
++    // Destructor
++
++        ~coupling3d();
++
++    // Member Functions
++#ifdef USE_MUI
++        mui::uniface<mui::config_3d>* getInterface(int index) const;
++#endif
++        size_t size() const;
++        word getInterfaceName(int index) const;
++        bool getInterfaceSendStatus(int index) const;
++        bool getInterfaceReceiveStatus(int index) const;
++        bool getInterfaceSmartSendStatus(int index) const;
++        bool getInterfaceExtentsStatus(int index) const;
++        vector getInterfaceSendDomStart(int index) const;
++        vector getInterfaceSendDomEnd(int index) const;
++        vector getInterfaceReceiveDomStart(int index) const;
++        vector getInterfaceReceiveDomEnd(int index) const;
++        bool getInterfaceItCouplingStatus(int index) const;
++};
++
++struct couplingInterface3d
++{
++    word domainName;
++    scalar refLength;
++    scalar refTime;
++    coupling3d* interfaces;
++};
++
++} // End namespace Foam
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++#endif
++
++// ************************************************************************* //
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/db/IOstreams/Pstreams/UPstream.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/db/IOstreams/Pstreams/UPstream.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/db/IOstreams/Pstreams/UPstream.H	2019-08-22 17:01:19.688652300 +0100
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/db/IOstreams/Pstreams/UPstream.H	2019-08-22 17:15:32.555950600 +0100
+@@ -366,7 +366,7 @@
+ 
+         //- Initialisation function called from main
+         //  Spawns slave processes and initialises inter-communication
+-        static bool init(int& argc, char**& argv, const bool needsThread);
++        static bool init(int& argc, char**& argv, const bool needsThread, bool coupled=false);
+ 
+         // Non-blocking comms
+ 
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argList.C ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argList.C
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argList.C	2019-08-22 17:01:21.918110800 +0100
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argList.C	2019-08-22 17:15:32.563470800 +0100
+@@ -44,6 +44,7 @@
+ Foam::SLList<Foam::string>    Foam::argList::validArgs;
+ Foam::HashTable<Foam::string> Foam::argList::validOptions;
+ Foam::HashTable<Foam::string> Foam::argList::validParOptions;
++Foam::HashTable<Foam::string> Foam::argList::validCplOptions;
+ Foam::HashTable<Foam::string> Foam::argList::optionUsage;
+ Foam::SLList<Foam::string>    Foam::argList::notes;
+ Foam::string::size_type Foam::argList::usageMin = 20;
+@@ -87,6 +88,11 @@
+      );
+ 
+     Pstream::addValidParOptions(validParOptions);
++
++#ifdef USE_MUI
++    argList::addBoolOption("coupled", "use MUI coupling");
++    validCplOptions.set("coupled", "");
++#endif
+ }
+ 
+ 
+@@ -443,6 +449,23 @@
+         argv
+     )().needsThreading();
+ 
++#ifdef USE_MUI //Only perform check if MUI library included, otherwise coupling always disabled
++    // Check if this run is coupled by searching for any coupling option
++    // If found call runCpl
++    for (int argI = 0; argI < argc; ++argI)
++    {
++        if (argv[argI][0] == '-')
++        {
++            const char *optionName = &argv[argI][1];
++
++            if (validCplOptions.found(optionName))
++            {
++                cplRunControl_.runCpl();
++                break;
++            }
++        }
++    }
++#endif
+ 
+     // Check if this run is a parallel run by searching for any parallel option
+     // If found call runPar which might filter argv
+@@ -454,7 +477,7 @@
+ 
+             if (validParOptions.found(optionName))
+             {
+-                parRunControl_.runPar(argc, argv, needsThread);
++                parRunControl_.runPar(argc, argv, needsThread, cplRunControl_.cplRun());
+                 break;
+             }
+         }
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argList.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argList.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argList.H	2019-08-22 17:01:21.923097700 +0100
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argList.H	2019-08-22 17:15:32.569988100 +0100
+@@ -42,6 +42,8 @@
+     Default command-line options:
+       - \par -case \<dir\>
+         Select a case directory instead of the current working directory
++      - \par -coupled
++        Specify case as a coupled job
+       - \par -parallel
+         Specify case as a parallel job
+       - \par -doc
+@@ -83,6 +85,7 @@
+ #include "word.H"
+ #include "fileName.H"
+ #include "parRun.H"
++#include "cplRun.H"
+ #include "IStringStream.H"
+ #include "OSspecific.H"
+ 
+@@ -103,9 +106,11 @@
+ class argList
+ {
+     // Private data
++		//- Switch on/off coupled mode. Has to be first to be constructed
++		//  so destructor is done last.
++		CplRunControl cplRunControl_;
+ 
+-        //- Switch on/off parallel mode. Has to be first to be constructed
+-        //  so destructor is done last.
++		//- Switch on/off parallel mode.
+         ParRunControl parRunControl_;
+ 
+         stringList args_;
+@@ -159,6 +164,9 @@
+         //- A list of valid parallel options
+         static HashTable<string> validParOptions;
+ 
++        //- A list of valid coupling options
++		static HashTable<string> validCplOptions;
++
+         //- Short usage information for validOptions
+         static HashTable<string> optionUsage;
+ 
+@@ -244,6 +252,9 @@
+             //- Return parRunControl
+             inline const ParRunControl& parRunControl() const;
+ 
++            //- Return cplRunControl
++			inline const CplRunControl& cplRunControl() const;
++
+             //- Return the path to the caseName
+             inline fileName path() const;
+ 
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argListI.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argListI.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argListI.H	2019-08-22 17:01:21.927608000 +0100
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/argListI.H	2019-08-22 17:15:32.577006800 +0100
+@@ -56,6 +56,10 @@
+     return parRunControl_;
+ }
+ 
++inline const Foam::CplRunControl& Foam::argList::cplRunControl() const
++{
++    return cplRunControl_;
++}
+ 
+ inline Foam::fileName Foam::argList::path() const
+ {
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/cplRun.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/cplRun.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/cplRun.H	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/cplRun.H	2019-08-22 17:15:32.584025700 +0100
+@@ -0,0 +1,78 @@
++/*---------------------------------------------------------------------------*\
++  =========                 |
++  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++   \\    /   O peration     | Website:  https://openfoam.org
++    \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
++     \\/     M anipulation  |
++-------------------------------------------------------------------------------
++License
++    This file is part of OpenFOAM.
++
++    OpenFOAM is free software: you can redistribute it and/or modify it
++    under the terms of the GNU General Public License as published by
++    the Free Software Foundation, either version 3 of the License, or
++    (at your option) any later version.
++
++    OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
++    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++    FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++    for more details.
++
++    You should have received a copy of the GNU General Public License
++    along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
++
++Class
++    Foam::CplRunControl
++
++Description
++    Helper class for initializing coupled jobs from the command arguments.
++
++\*---------------------------------------------------------------------------*/
++
++#ifndef cplRun_H
++#define cplRun_H
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++namespace Foam
++{
++
++/*---------------------------------------------------------------------------*\
++                           Class CplRunControl Declaration
++\*---------------------------------------------------------------------------*/
++
++class CplRunControl
++{
++    bool RunCpl;
++
++public:
++
++    CplRunControl()
++    :
++        RunCpl(false)
++    {}
++
++    ~CplRunControl()
++    {}
++
++    void runCpl()
++    {
++        RunCpl = true;
++    }
++
++    bool cplRun() const
++    {
++        return RunCpl;
++    }
++};
++
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++} // End namespace Foam
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
++
++#endif
++
++// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/parRun.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/parRun.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/parRun.H	2019-08-22 17:01:21.932621300 +0100
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/global/argList/parRun.H	2019-08-22 17:15:32.591044300 +0100
+@@ -64,11 +64,11 @@
+         }
+     }
+ 
+-    void runPar(int& argc, char**& argv, const bool needsThread)
++    void runPar(int& argc, char**& argv, const bool needsThread, bool coupled=false)
+     {
+         RunPar = true;
+ 
+-        if (!Pstream::init(argc, argv, needsThread))
++        if (!Pstream::init(argc, argv, needsThread, coupled))
+         {
+             Info<< "Failed to start parallel run" << endl;
+             Pstream::exit(1);
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/include/createCouplingData.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/include/createCouplingData.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/include/createCouplingData.H	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/include/createCouplingData.H	2019-08-22 17:15:32.598063200 +0100
+@@ -0,0 +1,5 @@
++//
++// createCouplingData.H
++// ~~~~~~~~~~~~
++    couplingInterface2d twoDInterfaces;
++    couplingInterface3d threeDInterfaces;
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/include/createCouplings.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/include/createCouplings.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/include/createCouplings.H	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/include/createCouplings.H	2019-08-22 17:15:32.604580500 +0100
+@@ -0,0 +1,651 @@
++//
++// createCoupling.H
++// ~~~~~~~~~~~~
++
++    {
++#ifdef USE_MUI
++        //- If this is not a parallel run then need to first call MPI_Init for MUI (otherwise this is called during PStream creation)
++        if (!args.parRunControl().parRun())
++        {
++            mui::mpi_split_by_app(argc, argv);
++        }
++#endif
++
++        twoDInterfaces.interfaces = NULL;
++        threeDInterfaces.interfaces = NULL;
++        bool twoDCreated = false;
++        bool threeDCreated = false;
++
++        point meshMin(VGREAT, VGREAT, VGREAT);
++        point meshMax(-VSMALL, -VSMALL, -VSMALL);
++
++        const pointField& meshPoints = mesh.points();
++
++        forAll(meshPoints, pts)
++        {
++            if(meshPoints[pts][0] < meshMin[0])
++            {
++                meshMin[0] = meshPoints[pts][0];
++            }
++
++            if(meshPoints[pts][1] < meshMin[1])
++            {
++                meshMin[1] = meshPoints[pts][1];
++            }
++
++            if(meshPoints[pts][2] < meshMin[2])
++            {
++                meshMin[2] = meshPoints[pts][2];
++            }
++
++            if(meshPoints[pts][0] > meshMax[0])
++            {
++                meshMax[0] = meshPoints[pts][0];
++            }
++
++            if(meshPoints[pts][1] > meshMax[1])
++            {
++                meshMax[1] = meshPoints[pts][1];
++            }
++
++            if(meshPoints[pts][2] > meshMax[2])
++            {
++                meshMax[2] = meshPoints[pts][2];
++            }
++        }
++
++        //Determine mesh extents
++        vector extents;
++        extents[0] = meshMax[0] - meshMin[0];
++        extents[1] = meshMax[1] - meshMin[1];
++        extents[2] = meshMax[2] - meshMin[2];
++
++        string inputFile("couplingDict");
++
++        IOdictionary couplingDict
++        (
++            IOobject
++            (
++                inputFile,
++                runTime.system(),
++                mesh,
++                IOobject::READ_IF_PRESENT,
++                IOobject::NO_WRITE
++            )
++        );
++
++        //Read coupling dictionary file if it exists
++        if (couplingDict.headerOk())
++        {
++            word mainCouplingName;
++
++            if (!(couplingDict.readIfPresent("couplingName", mainCouplingName)))
++            {
++                FatalIOErrorIn("", couplingDict)
++                               << "Missing couplingName entry" << exit(FatalIOError);
++            }
++
++            twoDInterfaces.domainName = mainCouplingName;
++            threeDInterfaces.domainName = mainCouplingName;
++
++            scalar refLength = 1.0;
++
++            couplingDict.readIfPresent("refLength", refLength);
++
++            twoDInterfaces.refLength = refLength;
++            threeDInterfaces.refLength = refLength;
++
++            scalar refTime = 1.0;
++
++            couplingDict.readIfPresent("refTime", refTime);
++
++            twoDInterfaces.refTime = refTime;
++            threeDInterfaces.refTime = refTime;
++
++            const PtrList<entry> couplingConfigurationsList
++            (
++                couplingDict.lookup("couplingConfigurations")
++            );
++
++            //Iterate through configuration lists (2D/3D)
++            forAll(couplingConfigurationsList, cC)
++            {
++                const entry& couplingConfigI = couplingConfigurationsList[cC];
++                const dictionary& couplingConfigIDict = couplingConfigI.dict();
++
++                wordList iFaceTOC(couplingConfigIDict.toc());
++
++                List<word> interfaceNames(iFaceTOC.size());
++                List<bool> send(iFaceTOC.size());
++                List<vector> sendStart(iFaceTOC.size());
++                List<vector> sendEnd(iFaceTOC.size());
++                List<bool> receive(iFaceTOC.size());
++                List<vector> rcvStart(iFaceTOC.size());
++				List<vector> rcvEnd(iFaceTOC.size());
++                List<bool> smart_send(iFaceTOC.size());
++                List<bool> iterationCoupling(iFaceTOC.size());
++
++                //Iterate through interfaces
++                forAll(iFaceTOC, cI)
++                {
++                    const dictionary& interfaceDict = couplingConfigIDict.subDict(iFaceTOC[cI]);
++
++                    interfaceNames[cI] = static_cast<word>(interfaceDict.dictName());
++
++                    if (interfaceDict.found("smartSend"))
++                    {
++                        smart_send[cI] = Switch(interfaceDict.lookup("smartSend"));
++                    }
++                    else
++                    {
++                        FatalIOErrorIn("", couplingDict)
++                                       << "Missing interface smartSend entry" << exit(FatalIOError);
++                    }
++
++                    if (interfaceDict.found("sending"))
++                    {
++                        send[cI] = Switch(interfaceDict.lookup("sending"));
++                    }
++                    else
++                    {
++                        FatalIOErrorIn("", couplingDict)
++                                       << "Missing interface sending entry" << exit(FatalIOError);
++                    }
++
++                    // Smart send enabled and interface set to send so define domain values according to dictionary input
++                    if(smart_send[cI] && send[cI])
++                    {
++                        bool sendDomDefined = false;
++
++                        if (interfaceDict.found("domainSendStart"))
++                        {
++                            sendStart[cI] = interfaceDict.lookup("domainSendStart");
++                            sendDomDefined = true;
++                        }
++                        else
++                        {
++                            sendDomDefined = false;
++                        }
++
++                        if(sendDomDefined)
++                        {
++                            if (interfaceDict.found("domainSendEnd"))
++                            {
++                                sendEnd[cI] = interfaceDict.lookup("domainSendEnd");
++                            }
++                            else
++                            {
++                                FatalIOErrorIn("", couplingDict)
++                                               << "Missing corresponding interface domainSendEnd entry " << exit(FatalIOError);
++                            }
++
++                            // Both start and end defined for send domain so truncate extents to fit mesh bounds if region not completely outside mesh
++                            if(sendStart[cI][0] < meshMax[0] && sendEnd[cI][0] > meshMin[0] &&
++                               sendStart[cI][1] < meshMax[1] && sendEnd[cI][1] > meshMin[1] &&
++                               sendStart[cI][2] < meshMax[2] && sendEnd[cI][2] > meshMin[2])
++                            {
++                                if(sendStart[cI][0] < meshMin[0]) //Snap to mesh bound minimum - 0.5%
++                                {
++                                    sendStart[cI][0] = meshMin[0] - extents[0]*0.005;
++                                }
++
++                                if(sendEnd[cI][0] > meshMax[0]) //Snap to mesh bound maximum + 0.5%
++                                {
++                                    sendEnd[cI][0] = meshMax[0] + extents[0]*0.005;
++                                }
++
++                                if(sendStart[cI][1] < meshMin[1]) //Snap to mesh bound minimum - 0.5%
++                                {
++                                    sendStart[cI][1] = meshMin[1] - extents[1]*0.005;
++                                }
++
++                                if(sendEnd[cI][1] > meshMax[1]) //Snap to mesh bound maximum + 0.5%
++                                {
++                                    sendEnd[cI][1] = meshMax[1] + extents[1]*0.005;
++                                }
++
++                                if(sendStart[cI][2] < meshMin[2]) //Snap to mesh bound minimum - 0.5%
++                                {
++                                    sendStart[cI][2] = meshMin[2] - extents[2]*0.005;
++                                }
++
++                                if(sendEnd[cI][2] > meshMax[2]) //Snap to mesh bound maximum + 0.5%
++                                {
++                                    sendEnd[cI][2] = meshMax[2] + extents[2]*0.005;
++                                }
++                            }
++                            else //Set send region to mesh bounds (this mesh is outside of the sending region so need to avoid overlap with other regions this rank shouldn't interact with)
++                            {
++                                sendStart[cI][0] = meshMin[0];
++                                sendStart[cI][1] = meshMin[1];
++                                sendStart[cI][2] = meshMin[2];
++                                sendEnd[cI][0] = meshMax[0];
++                                sendEnd[cI][1] = meshMax[1];
++                                sendEnd[cI][2] = meshMax[2];
++                            }
++                        }
++                        else
++                        {
++                            if (interfaceDict.found("domainSendEnd"))
++                            {
++                                FatalIOErrorIn("", couplingDict)
++                                               << "Missing corresponding interface domainSendStart entry " << exit(FatalIOError);
++                            }
++
++                            // "domain_send_start" and "domain_send_end" not set in dictionary, so initialise domain values to mesh bounds +/- 0.5%
++                            sendStart[cI][0] = meshMin[0] - extents[0]*0.005;
++                            sendStart[cI][1] = meshMin[1] - extents[1]*0.005;
++                            sendStart[cI][2] = meshMin[2] - extents[2]*0.005;
++                            sendEnd[cI][0] = meshMax[0] + extents[0]*0.005;
++                            sendEnd[cI][1] = meshMax[1] + extents[1]*0.005;
++                            sendEnd[cI][2] = meshMax[2] + extents[2]*0.005;
++                        }
++                    }
++                    else // Smart send not enabled and/or interface not set to send so just initialise domain values to zero as they wont be used
++                    {
++                        sendStart[cI][0] = 0;
++                        sendStart[cI][1] = 0;
++                        sendStart[cI][2] = 0;
++                        sendEnd[cI][0] = 0;
++                        sendEnd[cI][1] = 0;
++                        sendEnd[cI][2] = 0;
++                    }
++
++                    if (interfaceDict.found("receiving"))
++                    {
++                        receive[cI] = Switch(interfaceDict.lookup("receiving"));
++                    }
++                    else
++                    {
++                        FatalIOErrorIn("", couplingDict)
++                                       << "Missing interface receiving entry" << exit(FatalIOError);
++                    }
++
++                    // Smart send enabled and interface set to receive so define domain values according to dictionary input
++                    if(smart_send[cI] && receive[cI])
++                    {
++                        bool rcvDomDefined = false;
++
++                        if (interfaceDict.found("domainReceiveStart"))
++                        {
++                            rcvStart[cI] = interfaceDict.lookup("domainReceiveStart");
++                            rcvDomDefined = true;
++                        }
++                        else
++                        {
++                            rcvDomDefined = false;
++                        }
++
++                        if(rcvDomDefined)
++                        {
++                            if (interfaceDict.found("domainReceiveEnd"))
++                            {
++                                rcvEnd[cI] = interfaceDict.lookup("domainReceiveEnd");
++                            }
++                            else
++                            {
++                                FatalIOErrorIn("", couplingDict)
++                                               << "Missing corresponding interface domainReceiveEnd entry " << exit(FatalIOError);
++                            }
++
++                            // Both start and end defined for receive domain so truncate extents to fit mesh bounds if region not completely outside mesh
++                            if(rcvStart[cI][0] < meshMax[0] && rcvEnd[cI][0] > meshMin[0] &&
++                               rcvStart[cI][1] < meshMax[1] && rcvEnd[cI][1] > meshMin[1] &&
++                               rcvStart[cI][2] < meshMax[2] && rcvEnd[cI][2] > meshMin[2])
++                            {
++                                if(rcvStart[cI][0] < meshMin[0]) //Snap to mesh bound minimum - 0.5%
++                                {
++                                    rcvStart[cI][0] = meshMin[0] - extents[0]*0.005;
++                                }
++
++                                if(rcvEnd[cI][0] > meshMax[0]) //Snap to mesh bound maximum + 0.5%
++                                {
++                                    rcvEnd[cI][0] = meshMax[0] + extents[0]*0.005;
++                                }
++
++                                if(rcvStart[cI][1] < meshMin[1]) //Snap to mesh bound minimum - 0.5%
++                                {
++                                    rcvStart[cI][1] = meshMin[1] - extents[1]*0.005;
++                                }
++
++                                if(rcvEnd[cI][1] > meshMax[1]) //Snap to mesh bound maximum + 0.5%
++                                {
++                                    rcvEnd[cI][1] = meshMax[1] + extents[1]*0.005;
++                                }
++
++                                if(rcvStart[cI][2] < meshMin[2]) //Snap to mesh bound minimum - 0.5%
++                                {
++                                    rcvStart[cI][2] = meshMin[2] - extents[2]*0.005;
++                                }
++
++                                if(rcvEnd[cI][2] > meshMax[2]) //Snap to mesh bound maximum + 0.5%
++                                {
++                                    rcvEnd[cI][2] = meshMax[2] + extents[2]*0.005;
++                                }
++                            }
++                            else  //Set receive region to mesh bounds (this mesh is outside of the sending region so need to avoid overlap with other regions this rank shouldn't interact with)
++                            {
++                                rcvStart[cI][0] = meshMin[0];
++                                rcvStart[cI][1] = meshMin[1];
++                                rcvStart[cI][2] = meshMin[2];
++                                rcvEnd[cI][0] = meshMax[0];
++                                rcvEnd[cI][1] = meshMax[1];
++                                rcvEnd[cI][2] = meshMax[2];
++                            }
++                        }
++                        else
++                        {
++                            if (interfaceDict.found("domainReceiveEnd"))
++                            {
++                                FatalIOErrorIn("", couplingDict)
++                                               << "Missing corresponding interface domainReceiveStart entry " << exit(FatalIOError);
++                            }
++
++                            // "domain_receive_start" and "domain_receive_end" not set in dictionary, so initialise domain values to mesh bounds +/- 0.5%
++                            rcvStart[cI][0] = meshMin[0] - extents[0]*0.005;
++                            rcvStart[cI][1] = meshMin[1] - extents[1]*0.005;
++                            rcvStart[cI][2] = meshMin[2] - extents[2]*0.005;
++                            rcvEnd[cI][0] = meshMax[0] + extents[0]*0.005;
++                            rcvEnd[cI][1] = meshMax[1] + extents[1]*0.005;
++                            rcvEnd[cI][2] = meshMax[2] + extents[2]*0.005;
++                        }
++                    }
++                    else // Smart send not enabled and/or interface not set to send so just initialise domain values to zero as they wont be used
++                    {
++                        rcvStart[cI][0] = 0;
++                        rcvStart[cI][1] = 0;
++                        rcvStart[cI][2] = 0;
++                        rcvEnd[cI][0] = 0;
++                        rcvEnd[cI][1] = 0;
++                        rcvEnd[cI][2] = 0;
++                    }
++
++                    if (interfaceDict.found("iterationCoupling"))
++                    {
++                        iterationCoupling[cI] = Switch(interfaceDict.lookup("iterationCoupling"));
++                    }
++                    else
++                    {
++                        FatalIOErrorIn("", couplingDict)
++                                       << "Missing interface iterationCoupling entry" << exit(FatalIOError);
++                    }
++                }
++
++                if(iFaceTOC.size() > 0)
++                {
++                    if(couplingConfigIDict.dictName() == "TwoDInterfaces")
++                    {
++                        twoDInterfaces.interfaces = new coupling2d(mainCouplingName, interfaceNames, send, receive, smart_send, sendStart, sendEnd, rcvStart, rcvEnd, iterationCoupling);
++                        twoDCreated = true;
++                    }
++
++                    if(couplingConfigIDict.dictName() == "ThreeDInterfaces")
++                    {
++                    	threeDInterfaces.interfaces = new coupling3d(mainCouplingName, interfaceNames, send, receive, smart_send, sendStart, sendEnd, rcvStart, rcvEnd, iterationCoupling);
++                        threeDCreated = true;
++                    }
++                }
++            }
++        }
++
++        couplingDict.close();
++
++        if(twoDCreated)
++        {
++            //Announce send and receive spans for 2D interfaces that have smart send enabled
++            for(size_t i=0; i<twoDInterfaces.interfaces->size(); i++)
++            {
++                //Check if smart send should be enabled for this interface
++                if(twoDInterfaces.interfaces->getInterfaceSmartSendStatus(i))
++                {
++                    scalar oneOverRefLength = 1.0 / twoDInterfaces.refLength;
++
++                    label extentsDir = -1; //0 = 3D; 1 = Y/Z; 2 = X/Z; 3 = X/Y
++
++                    if(extents[0] >= (0.0 - VSMALL) && extents[0] <= (0.0 + VSMALL)) // X extent is zero, 2D plane is in Y/Z
++                    {
++                        extentsDir = 1;
++                    }
++                    else if(extents[1] >= (0.0 - VSMALL) && extents[1] <= (0.0 + VSMALL)) // Y extent is zero, 2D plane is in X/Z
++                    {
++                        extentsDir = 2;
++                    }
++                    else if(extents[2] >= (0.0 - VSMALL) && extents[2] <= (0.0 + VSMALL)) // Z extent is zero, 2D plane is in X/Y
++                    {
++                        extentsDir = 3;
++                    }
++                    else // Mesh is 3D
++                    {
++                        extentsDir = 0;
++                    }
++
++                    //Check mesh is 2D or 3D
++                    if(extentsDir > 0)
++                    {
++                        mui::point2d start, end;
++
++                        // Interface is set to send
++                        if(twoDInterfaces.interfaces->getInterfaceSendStatus(i))
++                        {
++                            if(extentsDir == 1) //Extents in Y/Z
++                            {
++                                start[0] = twoDInterfaces.interfaces->getInterfaceSendDomStart(i)[1];
++                                start[1] = twoDInterfaces.interfaces->getInterfaceSendDomStart(i)[2];
++
++                                end[0] = twoDInterfaces.interfaces->getInterfaceSendDomEnd(i)[1];
++                                end[1] = twoDInterfaces.interfaces->getInterfaceSendDomEnd(i)[2];
++                            }
++                            else if (extentsDir == 2) //Extents in X/Z
++                            {
++                                start[0] = twoDInterfaces.interfaces->getInterfaceSendDomStart(i)[0];
++                                start[1] = twoDInterfaces.interfaces->getInterfaceSendDomStart(i)[2];
++
++                                end[0] = twoDInterfaces.interfaces->getInterfaceSendDomEnd(i)[0];
++                                end[1] = twoDInterfaces.interfaces->getInterfaceSendDomEnd(i)[2];
++                            }
++                            else if (extentsDir == 3) //Extents in X/Y
++                            {
++                                start[0] = twoDInterfaces.interfaces->getInterfaceSendDomStart(i)[0];
++                                start[1] = twoDInterfaces.interfaces->getInterfaceSendDomStart(i)[1];
++
++                                end[0] = twoDInterfaces.interfaces->getInterfaceSendDomEnd(i)[0];
++                                end[1] = twoDInterfaces.interfaces->getInterfaceSendDomEnd(i)[1];
++                            }
++
++                            start[0] *= oneOverRefLength;
++                            start[1] *= oneOverRefLength;
++                            end[0] *= oneOverRefLength;
++                            end[1] *= oneOverRefLength;
++
++                            mui::geometry::box2d region_2d(start, end);
++
++                            //- Using iteration based coupling
++                            if(twoDInterfaces.interfaces->getInterfaceItCouplingStatus(i))
++                            {
++                                label totalIter = label((runTime.endTime().value() - runTime.startTime().value()) / runTime.deltaT().value());
++                                twoDInterfaces.interfaces->getInterface(i)->announce_send_span(0, totalIter, region_2d);
++                            }
++                            else //- Using direct time based coupling
++                            {
++                                twoDInterfaces.interfaces->getInterface(i)->announce_send_span((runTime.startTime().value() / twoDInterfaces.refTime), (runTime.endTime().value() / twoDInterfaces.refTime), region_2d);
++                            }
++                        }
++
++                        //Interface is set to receive
++                        if(twoDInterfaces.interfaces->getInterfaceReceiveStatus(i))
++                        {
++                            if(extentsDir == 1) //Extents in Y/Z
++                            {
++                                start[0] = twoDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[1];
++                                start[1] = twoDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[2];
++
++                                end[0] = twoDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[1];
++                                end[1] = twoDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[2];
++                            }
++                            else if (extentsDir == 2) //Extents in X/Z
++                            {
++                                start[0] = twoDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[0];
++                                start[1] = twoDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[2];
++
++                                end[0] = twoDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[0];
++                                end[1] = twoDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[2];
++                            }
++                            else if (extentsDir == 3) //Extents in X/Y
++                            {
++                                start[0] = twoDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[0];
++                                start[1] = twoDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[1];
++
++                                end[0] = twoDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[0];
++                                end[1] = twoDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[1];
++                            }
++
++                            start[0] *= oneOverRefLength;
++                            start[1] *= oneOverRefLength;
++                            end[0] *= oneOverRefLength;
++                            end[1] *= oneOverRefLength;
++
++                            mui::geometry::box2d region_2d(start, end);
++
++                            //- Using iteration based coupling
++                            if(twoDInterfaces.interfaces->getInterfaceItCouplingStatus(i))
++                            {
++                                label totalIter = label((runTime.endTime().value() - runTime.startTime().value()) / runTime.deltaT().value());
++                                twoDInterfaces.interfaces->getInterface(i)->announce_recv_span(0, totalIter, region_2d);
++                            }
++                            else //- Using direct time based coupling
++                            {
++                                twoDInterfaces.interfaces->getInterface(i)->announce_recv_span((runTime.startTime().value() / twoDInterfaces.refTime), (runTime.endTime().value() / twoDInterfaces.refTime), region_2d);
++                            }
++                        }
++
++                        //- Using iteration based coupling
++                        if(twoDInterfaces.interfaces->getInterfaceItCouplingStatus(i))
++                        {
++                            twoDInterfaces.interfaces->getInterface(i)->commit(0);
++                            twoDInterfaces.interfaces->getInterface(i)->barrier(0);
++                            twoDInterfaces.interfaces->getInterface(i)->forget(0, true);
++                        }
++                        else //- Using direct time based coupling
++                        {
++                            twoDInterfaces.interfaces->getInterface(i)->commit(runTime.startTime().value() / twoDInterfaces.refTime);
++                            twoDInterfaces.interfaces->getInterface(i)->barrier(runTime.startTime().value() / twoDInterfaces.refTime);
++                            twoDInterfaces.interfaces->getInterface(i)->forget(runTime.startTime().value() / twoDInterfaces.refTime, true);
++                        }
++                    }
++                    else if (extentsDir == 0) //Mesh is 3D
++                    {
++                        FatalIOErrorIn("", couplingDict)
++                                       << "Trying to create a 2D interface in a 3D mesh" << exit(FatalIOError);
++                    }
++                }
++            }
++        }
++
++        if(threeDCreated)
++        {
++            //Announce send and receive spans for 3D interfaces that have domain extents to enable MUI smart send
++            for(size_t i=0; i<threeDInterfaces.interfaces->size(); i++)
++            {
++                if(threeDInterfaces.interfaces->getInterfaceSmartSendStatus(i)) //Check if smart send should be enabled for this interface
++                {
++                    scalar oneOverRefLength = 1.0 / threeDInterfaces.refLength;
++
++                    bool isThreeD = true;
++
++                    //If one (or more) of the extents of the mesh is zero then mesh is not 3D
++                    if((extents[0] >= (0.0 - VSMALL) && extents[0]) <= (0.0 + VSMALL)
++                      || (extents[1] >= (0.0 - VSMALL) && extents[1]) <= (0.0 + VSMALL)
++                      || (extents[2] >= (0.0 - VSMALL) && extents[2]) <= (0.0 + VSMALL))
++                    {
++                        isThreeD = false;
++                    }
++
++                    if(isThreeD)
++                    {
++                        //Interface is set to send
++                        if(threeDInterfaces.interfaces->getInterfaceSendStatus(i))
++                        {
++			                //Create a 3D box geometry based on pre-computed send domain
++                            mui::point3d start(threeDInterfaces.interfaces->getInterfaceSendDomStart(i)[0],
++                                               threeDInterfaces.interfaces->getInterfaceSendDomStart(i)[1],
++                                               threeDInterfaces.interfaces->getInterfaceSendDomStart(i)[2]);
++                            mui::point3d end(threeDInterfaces.interfaces->getInterfaceSendDomEnd(i)[0],
++                                             threeDInterfaces.interfaces->getInterfaceSendDomEnd(i)[1],
++                                             threeDInterfaces.interfaces->getInterfaceSendDomEnd(i)[2]);
++
++                            start[0] *= oneOverRefLength;
++                            start[1] *= oneOverRefLength;
++                            start[2] *= oneOverRefLength;
++                            end[0] *= oneOverRefLength;
++                            end[1] *= oneOverRefLength;
++                            end[2] *= oneOverRefLength;
++
++                            mui::geometry::box3d region_3d(start, end);
++
++                            //- Using iteration based coupling
++                            if(threeDInterfaces.interfaces->getInterfaceItCouplingStatus(i))
++                            {
++                                label totalIter = label((runTime.endTime().value() - runTime.startTime().value()) / runTime.deltaT().value());
++                                threeDInterfaces.interfaces->getInterface(i)->announce_send_span(0, totalIter, region_3d);
++                            }
++                            else //- Using direct time based coupling
++                            {
++                                threeDInterfaces.interfaces->getInterface(i)->announce_send_span((runTime.startTime().value() / threeDInterfaces.refTime), (runTime.endTime().value() / threeDInterfaces.refTime), region_3d);
++                            }
++                        }
++
++                        //Interface is set to receive
++                        if(threeDInterfaces.interfaces->getInterfaceReceiveStatus(i))
++                        {
++                            //Create a 3D box geometry based on pre-computed receive domain
++                            mui::point3d start(threeDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[0],
++                                               threeDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[1],
++                                               threeDInterfaces.interfaces->getInterfaceReceiveDomStart(i)[2]);
++                            mui::point3d end(threeDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[0],
++                                             threeDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[1],
++                                             threeDInterfaces.interfaces->getInterfaceReceiveDomEnd(i)[2]);
++
++                            start[0] *= oneOverRefLength;
++                            start[1] *= oneOverRefLength;
++                            start[2] *= oneOverRefLength;
++                            end[0] *= oneOverRefLength;
++                            end[1] *= oneOverRefLength;
++                            end[2] *= oneOverRefLength;
++
++                            mui::geometry::box3d region_3d(start, end);
++
++                            //- Using iteration based coupling
++                            if(threeDInterfaces.interfaces->getInterfaceItCouplingStatus(i))
++                            {
++                                label totalIter = label((runTime.endTime().value() - runTime.startTime().value()) / runTime.deltaT().value());
++                                threeDInterfaces.interfaces->getInterface(i)->announce_recv_span(0, totalIter, region_3d);
++                            }
++                            else //- Using direct time based coupling
++                            {
++                                threeDInterfaces.interfaces->getInterface(i)->announce_recv_span((runTime.startTime().value() / threeDInterfaces.refTime), (runTime.endTime().value() / threeDInterfaces.refTime), region_3d);
++                            }
++                        }
++
++                        //- Using iteration based coupling
++                        if(threeDInterfaces.interfaces->getInterfaceItCouplingStatus(i))
++                        {
++                            threeDInterfaces.interfaces->getInterface(i)->commit(0);
++                            threeDInterfaces.interfaces->getInterface(i)->barrier(0);
++                            threeDInterfaces.interfaces->getInterface(i)->forget(0, true);
++                        }
++                        else //- Using direct time based coupling
++                        {
++                            threeDInterfaces.interfaces->getInterface(i)->commit(runTime.startTime().value() / threeDInterfaces.refTime);
++                            threeDInterfaces.interfaces->getInterface(i)->barrier(runTime.startTime().value() / threeDInterfaces.refTime);
++                            threeDInterfaces.interfaces->getInterface(i)->forget(runTime.startTime().value() / threeDInterfaces.refTime, true);
++                        }
++                    }
++                    else
++                    {
++                        FatalIOErrorIn("", couplingDict)
++                                       << "Trying to create a 3D interface in a 2D mesh" << exit(FatalIOError);
++                    }
++                }
++            }
++        }
++    }
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/include/deleteCouplings.H ../finalVersion/OpenFOAM-6/src/OpenFOAM/include/deleteCouplings.H
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/include/deleteCouplings.H	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/include/deleteCouplings.H	2019-08-22 17:15:32.611599400 +0100
+@@ -0,0 +1,18 @@
++//
++// deleteCouplings.H
++// ~~~~~~~~~~~~
++    if(twoDInterfaces.interfaces != NULL)
++    {
++        delete twoDInterfaces.interfaces;
++    }
++
++    if(threeDInterfaces.interfaces != NULL)
++    {
++        delete threeDInterfaces.interfaces;
++    }
++
++    //- If this is not a parallel run then need to finalise MPI (otherwise this is handled by MUI due to the use of split_by_app() function)
++    if (!args.parRunControl().parRun())
++    {
++        MPI_Finalize();
++    }
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/Make/files ../finalVersion/OpenFOAM-6/src/OpenFOAM/Make/files
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/Make/files	2019-08-22 17:01:17.785883300 +0100
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/Make/files	2019-08-22 17:15:32.620122100 +0100
+@@ -707,4 +707,8 @@
+ 
+ meshes/data/data.C
+ 
++/* MUI COUPLING */
++coupling/coupling2d/coupling2d.C
++coupling/coupling3d/coupling3d.C
++
+ LIB = $(FOAM_LIBBIN)/libOpenFOAM
+diff -ruN ../originalVersion/OpenFOAM-6/src/OpenFOAM/Make/options ../finalVersion/OpenFOAM-6/src/OpenFOAM/Make/options
+--- ../originalVersion/OpenFOAM-6/src/OpenFOAM/Make/options	2019-08-22 17:01:17.794406500 +0100
++++ ../finalVersion/OpenFOAM-6/src/OpenFOAM/Make/options	2019-08-22 17:15:32.632155700 +0100
+@@ -1,7 +1,15 @@
++sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
++sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
++
+ EXE_INC = \
++    $(PFLAGS) \
++    $(PINC) \
++    ${MUI_INC} \
+     -I$(OBJECTS_DIR)
+ 
+ LIB_LIBS = \
+     $(FOAM_LIBBIN)/libOSspecific.o \
+     -L$(FOAM_LIBBIN)/dummy -lPstream \
+-    -lz
++    -lz \
++    $(PLIBS)
+diff -ruN ../originalVersion/OpenFOAM-6/src/Pstream/dummy/UPstream.C ../finalVersion/OpenFOAM-6/src/Pstream/dummy/UPstream.C
+--- ../originalVersion/OpenFOAM-6/src/Pstream/dummy/UPstream.C	2019-08-22 17:01:27.398307000 +0100
++++ ../finalVersion/OpenFOAM-6/src/Pstream/dummy/UPstream.C	2019-08-22 17:15:32.638170400 +0100
+@@ -32,7 +32,7 @@
+ {}
+ 
+ 
+-bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread)
++bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread, bool coupled)
+ {
+     FatalErrorInFunction
+         << "Trying to use the dummy Pstream library." << nl
+diff -ruN ../originalVersion/OpenFOAM-6/src/Pstream/mpi/Make/options ../finalVersion/OpenFOAM-6/src/Pstream/mpi/Make/options
+--- ../originalVersion/OpenFOAM-6/src/Pstream/mpi/Make/options	2019-08-22 17:01:27.409309200 +0100
++++ ../finalVersion/OpenFOAM-6/src/Pstream/mpi/Make/options	2019-08-22 17:15:32.647194600 +0100
+@@ -1,5 +1,6 @@
+ sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
+ sinclude $(RULES)/mplib$(WM_MPLIB)
++sinclude $(GENERAL_RULES)/MUI
+ 
+-EXE_INC  = $(PFLAGS) $(PINC)
++EXE_INC  = $(PFLAGS) $(PINC) $(MUI_INC)
+ LIB_LIBS = $(PLIBS)
+diff -ruN ../originalVersion/OpenFOAM-6/src/Pstream/mpi/PstreamGlobals.C ../finalVersion/OpenFOAM-6/src/Pstream/mpi/PstreamGlobals.C
+--- ../originalVersion/OpenFOAM-6/src/Pstream/mpi/PstreamGlobals.C	2019-08-22 17:01:27.413821200 +0100
++++ ../finalVersion/OpenFOAM-6/src/Pstream/mpi/PstreamGlobals.C	2019-08-22 17:15:32.651707800 +0100
+@@ -34,6 +34,8 @@
+ 
+ MPI_Comm PstreamGlobals::MPI_COMM_FOAM;
+ 
++MPI_Comm PstreamGlobals::commWorld_;
++
+ // Outstanding non-blocking operations.
+ //! \cond fileScope
+ DynamicList<MPI_Request> PstreamGlobals::outstandingRequests_;
+diff -ruN ../originalVersion/OpenFOAM-6/src/Pstream/mpi/PstreamGlobals.H ../finalVersion/OpenFOAM-6/src/Pstream/mpi/PstreamGlobals.H
+--- ../originalVersion/OpenFOAM-6/src/Pstream/mpi/PstreamGlobals.H	2019-08-22 17:01:27.418360500 +0100
++++ ../finalVersion/OpenFOAM-6/src/Pstream/mpi/PstreamGlobals.H	2019-08-22 17:15:32.661733400 +0100
+@@ -59,6 +59,9 @@
+ 
+     extern DynamicList<int> freedTags_;
+ 
++    //Default MPI communicator (either allocated by MUI if in use or becomes MPI_COMM_WORLD)
++    extern MPI_Comm commWorld_;
++
+     // Current communicators. First element will be MPI_COMM_FOAM
+     extern DynamicList<MPI_Comm> MPICommunicators_;
+ 
+diff -ruN ../originalVersion/OpenFOAM-6/src/Pstream/mpi/UPstream.C ../finalVersion/OpenFOAM-6/src/Pstream/mpi/UPstream.C
+--- ../originalVersion/OpenFOAM-6/src/Pstream/mpi/UPstream.C	2019-08-22 17:01:27.432372000 +0100
++++ ../finalVersion/OpenFOAM-6/src/Pstream/mpi/UPstream.C	2019-08-22 17:15:32.665242600 +0100
+@@ -40,6 +40,12 @@
+ #include <cstdlib>
+ #include <csignal>
+ 
++// NOTE:
++// MUI header included if the switch -DUSE_MUI included during compilation.
++#ifdef USE_MUI
++    #include "mui.h"
++#endif
++
+ #if defined(WM_SP)
+     #define MPI_SCALAR MPI_FLOAT
+ #elif defined(WM_DP)
+@@ -65,38 +71,59 @@
+ }
+ 
+ 
+-bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread)
++bool Foam::UPstream::init(int& argc, char**& argv, const bool needsThread, bool coupled)
+ {
+-    // MPI_Init(&argc, &argv);
+-    int provided_thread_support;
+-    MPI_Init_thread
+-    (
+-        &argc,
+-        &argv,
+-        (
+-            needsThread
+-          ? MPI_THREAD_MULTIPLE
+-          : MPI_THREAD_SINGLE
+-        ),
+-        &provided_thread_support
+-    );
+-
+-    // int numprocs;
+-    // MPI_Comm_size(MPI_COMM_WORLD, &numprocs);
+-    // int myRank;
+-    // MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+-
+-    int myGlobalRank;
+-    MPI_Comm_rank(MPI_COMM_WORLD, &myGlobalRank);
+-    MPI_Comm_split
+-    (
+-        MPI_COMM_WORLD,
+-        1,
+-        myGlobalRank,
+-        &PstreamGlobals::MPI_COMM_FOAM
+-    );
++	int provided_thread_support;
++
++	if(coupled)
++	{
++		#ifdef USE_MUI
++			//Use world returned by MUI, based on MPI MPMD model, calls MPI_Init_thread inside MUI function
++			PstreamGlobals::commWorld_ = mui::mpi_split_by_app(argc, argv, (needsThread ? MPI_THREAD_MULTIPLE : MPI_THREAD_SINGLE), &provided_thread_support);
++		#else
++			PstreamGlobals::commWorld_ = MPI_COMM_WORLD;
++
++			MPI_Init_thread
++			(
++				&argc,
++				&argv,
++				(
++					needsThread
++				  ? MPI_THREAD_MULTIPLE
++				  : MPI_THREAD_SINGLE
++				),
++				&provided_thread_support
++			);
++		#endif
++	}
++	else
++	{
++		PstreamGlobals::commWorld_ = MPI_COMM_WORLD;
++
++		MPI_Init_thread
++		(
++			&argc,
++			&argv,
++			(
++				needsThread
++			  ? MPI_THREAD_MULTIPLE
++			  : MPI_THREAD_SINGLE
++			),
++			&provided_thread_support
++		);
++	}
++
++	int myGlobalRank;
++	MPI_Comm_rank(PstreamGlobals::commWorld_, &myGlobalRank);
++	MPI_Comm_split
++	(
++		PstreamGlobals::commWorld_,
++		1,
++		myGlobalRank,
++		&PstreamGlobals::MPI_COMM_FOAM
++	);
+ 
+-    int numprocs;
++	int numprocs;
+     MPI_Comm_size(PstreamGlobals::MPI_COMM_FOAM, &numprocs);
+     int myRank;
+     MPI_Comm_rank(PstreamGlobals::MPI_COMM_FOAM, &myRank);

@@ -1,0 +1,111 @@
+diff -ruN ../originalVersion/OpenFOAM-6/etc/bashrc ../finalVersion/OpenFOAM-6/etc/bashrc
+--- ../originalVersion/OpenFOAM-6/etc/bashrc	2019-08-22 17:01:15.494286500 +0100
++++ ../finalVersion/OpenFOAM-6/etc/bashrc	2019-08-22 17:15:32.435127800 +0100
+@@ -172,6 +172,7 @@
+ _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/paraview`
+ _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/ensight`
+ _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/gperftools`
++_foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.sh/MUI`
+ 
+ if [ ! -z "$FOAMY_HEX_MESH" ]
+ then
+diff -ruN ../originalVersion/OpenFOAM-6/etc/config.csh/MUI ../finalVersion/OpenFOAM-6/etc/config.csh/MUI
+--- ../originalVersion/OpenFOAM-6/etc/config.csh/MUI	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/etc/config.csh/MUI	2019-08-22 17:15:32.444152000 +0100
+@@ -0,0 +1,39 @@
++#----------------------------------*-sh-*--------------------------------------
++# =========                 |
++# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++#  \\    /   O peration     | Website:  https://openfoam.org
++#   \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
++#    \\/     M anipulation  |
++#------------------------------------------------------------------------------
++# License
++#     This file is part of OpenFOAM.
++#
++#     OpenFOAM is free software: you can redistribute it and/or modify it
++#     under the terms of the GNU General Public License as published by
++#     the Free Software Foundation, either version 3 of the License, or
++#     (at your option) any later version.
++#
++#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
++#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++#     for more details.
++#
++#     You should have received a copy of the GNU General Public License
++#     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
++#
++# File
++#     etc/config.csh/MUI
++#
++# Description
++#     Startup file for communications library (MPI) for OpenFOAM
++#     Sourced from OpenFOAM-<VERSION>/etc/bashrc
++#
++#------------------------------------------------------------------------------
++
++setenv MUI_ARCH_PATH $WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/MUI
++
++if ($?FOAM_VERBOSE && $?prompt) then
++    echo "Using MUI at $MUI_ARCH_PATH"
++endif
++
++# -----------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/etc/config.sh/MUI ../finalVersion/OpenFOAM-6/etc/config.sh/MUI
+--- ../originalVersion/OpenFOAM-6/etc/config.sh/MUI	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/OpenFOAM-6/etc/config.sh/MUI	2019-08-22 17:15:32.451672900 +0100
+@@ -0,0 +1,42 @@
++#----------------------------------*-sh-*--------------------------------------
++# =========                 |
++# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++#  \\    /   O peration     | Website:  https://openfoam.org
++#   \\  /    A nd           | Copyright (C) 2011-2018 OpenFOAM Foundation
++#    \\/     M anipulation  |
++#------------------------------------------------------------------------------
++# License
++#     This file is part of OpenFOAM.
++#
++#     OpenFOAM is free software: you can redistribute it and/or modify it
++#     under the terms of the GNU General Public License as published by
++#     the Free Software Foundation, either version 3 of the License, or
++#     (at your option) any later version.
++#
++#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
++#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++#     for more details.
++#
++#     You should have received a copy of the GNU General Public License
++#     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
++#
++# File
++#     etc/config.sh/MUI
++#
++# Description
++#     Startup file for communications library (MPI) for OpenFOAM
++#     Sourced from OpenFOAM-<VERSION>/etc/bashrc
++#
++#------------------------------------------------------------------------------
++
++mui_version=MUI
++
++export MUI_ARCH_PATH=$WM_THIRD_PARTY_DIR/platforms/$WM_ARCH$WM_COMPILER/$mui_version
++
++if [ "$FOAM_VERBOSE" -a "$PS1" ]
++then
++    echo "Using MUI at $MUI_ARCH_PATH"
++fi
++
++# -----------------------------------------------------------------------------
+diff -ruN ../originalVersion/OpenFOAM-6/etc/cshrc ../finalVersion/OpenFOAM-6/etc/cshrc
+--- ../originalVersion/OpenFOAM-6/etc/cshrc	2019-08-22 17:01:16.655862900 +0100
++++ ../finalVersion/OpenFOAM-6/etc/cshrc	2019-08-22 17:15:32.462200000 +0100
+@@ -216,6 +216,7 @@
+ _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.csh/mpi`
+ _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.csh/paraview`
+ _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.csh/ensight`
++_foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config/MUI`
+ 
+ if ( ($?FOAMY_HEX_MESH) ) then
+     _foamSource `$WM_PROJECT_DIR/bin/foamEtcFile config.csh/CGAL`
