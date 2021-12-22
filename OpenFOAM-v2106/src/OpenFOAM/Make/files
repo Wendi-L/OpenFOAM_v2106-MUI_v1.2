@@ -808,4 +808,8 @@ $(writers)/jplotGraph/jplotGraph.C
 
 meshes/data/data.C
 
+/* MUI COUPLING */
+coupling/coupling2d/coupling2d.C
+coupling/coupling3d/coupling3d.C
+
 LIB = $(FOAM_LIBBIN)/libOpenFOAM

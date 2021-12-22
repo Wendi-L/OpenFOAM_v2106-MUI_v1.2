@@ -38,6 +38,10 @@ Description
 
 #include "solutionControl.H"
 
+#ifdef USE_MUI // included if the switch -DUSE_MUI included during compilation.
+  #include "fvCoupling.H"
+#endif
+
 //- Declare that pimpleControl will be used
 #define SIMPLE_CONTROL
 
@@ -101,6 +105,14 @@ public:
             const bool verbose = true
         );
 
+        //- Construct from a mesh and the name of the algorithm
+        simpleControl
+        (
+		    fvMesh& mesh,
+		    const word& algorithmName,
+            couplingInterface2d& twoDInterfaces,
+            couplingInterface3d& threeDInterfaces
+        );
 
     //- Destructor
     virtual ~simpleControl() = default;

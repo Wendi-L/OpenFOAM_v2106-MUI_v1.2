@@ -111,6 +111,10 @@ inline const Foam::ParRunControl& Foam::argList::parRunControl() const
     return parRunControl_;
 }
 
+inline const Foam::CplRunControl& Foam::argList::cplRunControl() const
+{
+    return cplRunControl_;
+}
 
 inline Foam::dlLibraryTable& Foam::argList::libs() const
 {

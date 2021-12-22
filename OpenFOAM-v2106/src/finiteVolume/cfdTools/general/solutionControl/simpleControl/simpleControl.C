@@ -132,6 +132,142 @@ Foam::simpleControl::simpleControl
     }
 }
 
+Foam::simpleControl::simpleControl(fvMesh& mesh, const word& algorithmName, couplingInterface2d& twoDInterfaces, couplingInterface3d& threeDInterfaces)
+:
+    fluidSolutionControl(mesh, algorithmName),
+    singleRegionConvergenceControl
+    (
+        static_cast<singleRegionSolutionControl&>(*this)
+    )
+{
+    read();
+    printResidualControls();
+
+#ifdef USE_MUI
+    //- If there are 2D interfaces defined in couplingDict then iterate through
+    if(twoDInterfaces.interfaces != NULL)
+    {
+		if(twoDInterfaces.interfaces->size() != 0)
+		{
+			mui::point2d send_point, rcv_point;
+
+			//Push values
+			for(size_t i=0; i<twoDInterfaces.interfaces->size(); i++)
+			{
+				//- Create 2D sending point at location [0, 0]
+				send_point[0] = 0;
+				send_point[1] = 0;
+
+				//- Push value of 100 to MUI interface with label "data" at sending point at the current solver time
+				twoDInterfaces.interfaces->getInterface(i)->push("data", send_point, static_cast<scalar>(100));
+
+				//- Create 2D sending point at location [0.01, 0.01]
+				send_point[0] = 0.01;
+				send_point[1] = 0.01;
+
+				//- Push value of 200 to MUI interface with label "data" at sending point at the current solver time
+				twoDInterfaces.interfaces->getInterface(i)->push("data", send_point, static_cast<scalar>(200));
+
+				//- Commit the pushed value to the interface at current solver time
+				twoDInterfaces.interfaces->getInterface(i)->commit(static_cast<scalar>(1));
+			}
+
+			mui::sampler_exact2d<scalar> spatial_sampler;
+			mui::chrono_sampler_exact2d chrono_sampler;
+
+			//Fetch values
+			for(size_t i=0; i<twoDInterfaces.interfaces->size(); i++)
+			{
+				//- Create 2D receiving point at location [0, 0]
+				rcv_point[0] = 0;
+				rcv_point[1] = 0;
+
+				//- Blocking fetch for value passed through interface from coupled solver
+				scalar rcv_value = twoDInterfaces.interfaces->getInterface(i)->fetch("data", rcv_point, static_cast<scalar>(1), spatial_sampler, chrono_sampler);
+
+				std::cout << "[MUI] Received value through 2D interface ("
+						  << twoDInterfaces.interfaces->getInterfaceName(i) << "): "
+						  << rcv_value << std::endl;
+
+				//- Create 2D receiving point at location [0.01, 0.01]
+				rcv_point[0] = 0.01;
+				rcv_point[1] = 0.01;
+
+				//- Blocking fetch for value passed through interface from coupled solver
+				rcv_value = twoDInterfaces.interfaces->getInterface(i)->fetch("data", rcv_point, static_cast<scalar>(1), spatial_sampler, chrono_sampler);
+
+				std::cout << "[MUI] Received value through 2D interface ("
+						  << twoDInterfaces.interfaces->getInterfaceName(i) << "): "
+						  << rcv_value << std::endl;
+			}
+		}
+    }
+
+    //- If there are 3D interfaces defined in couplingDict then iterate through
+    if(threeDInterfaces.interfaces != NULL)
+	{
+		if(threeDInterfaces.interfaces->size() != 0)
+		{
+			mui::point3d send_point, rcv_point;
+
+			//Push values
+			for(size_t i=0; i<threeDInterfaces.interfaces->size(); i++)
+			{
+				//- Create 3D sending point at location [0, 0, 0]
+				send_point[0] = 0;
+				send_point[1] = 0;
+				send_point[2] = 0;
+
+				//- Push value of 100 to MUI interface with label "data" at sending point at the current solver time
+				threeDInterfaces.interfaces->getInterface(i)->push("data", send_point, static_cast<scalar>(100));
+
+				//- Create 3D sending point at location [0.01, 0.01, 0.01]
+				send_point[0] = 0.01;
+				send_point[1] = 0.01;
+				send_point[2] = 0.01;
+
+				//- Push value of 200 to MUI interface with label "data" at sending point at the current solver time
+				threeDInterfaces.interfaces->getInterface(i)->push("data", send_point, static_cast<scalar>(200));
+
+				//- Commit the pushed values to the interface at current solver time
+				threeDInterfaces.interfaces->getInterface(i)->commit(static_cast<scalar>(1));
+			}
+
+			mui::sampler_exact3d<scalar> spatial_sampler;
+			mui::chrono_sampler_exact3d chrono_sampler;
+
+			//Fetch values
+			for(size_t i=0; i<threeDInterfaces.interfaces->size(); i++)
+			{
+				//- Create 3D receiving point at location [0, 0, 0]
+				rcv_point[0] = 0;
+				rcv_point[1] = 0;
+				rcv_point[2] = 0;
+
+				//- Blocking fetch for value passed through interface from coupled solver
+				scalar rcv_value = threeDInterfaces.interfaces->getInterface(i)->fetch("data", rcv_point, static_cast<scalar>(1), spatial_sampler, chrono_sampler);
+
+				std::cout << "[MUI] Received value through 3D interface ("
+						  << threeDInterfaces.interfaces->getInterfaceName(i) << "): "
+						  << rcv_value << std::endl;
+
+				//- Create 3D receiving point at location [0.01, 0.01, 0.01]
+				rcv_point[0] = 0.01;
+				rcv_point[1] = 0.01;
+				rcv_point[2] = 0.01;
+
+				//- Blocking fetch for value passed through interface from coupled solver
+				rcv_value = threeDInterfaces.interfaces->getInterface(i)->fetch("data", rcv_point, static_cast<scalar>(1), spatial_sampler, chrono_sampler);
+
+				std::cout << "[MUI] Received value through 3D interface ("
+						  << threeDInterfaces.interfaces->getInterfaceName(i) << "): "
+						  << rcv_value << std::endl;
+			}
+		}
+	}
+#endif
+}
+
 
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 

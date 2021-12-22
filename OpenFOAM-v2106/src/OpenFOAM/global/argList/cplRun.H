@@ -5,8 +5,8 @@
     \\  /    A nd           | www.openfoam.com
      \\/     M anipulation  |
 -------------------------------------------------------------------------------
-    Copyright (C) 2011-2018 OpenFOAM Foundation
-    Copyright (C) 2018-2020 OpenCFD Ltd.
+    Copyright (C) 2011-2013 OpenFOAM Foundation
+    Copyright (C) 2017-2021 OpenCFD Ltd.
 -------------------------------------------------------------------------------
 License
     This file is part of OpenFOAM.
@@ -24,20 +24,10 @@ License
     You should have received a copy of the GNU General Public License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
-Class
-    Foam::ParRunControl
-
-Description
-    Helper class for initializing parallel jobs from the command arguments.
-    Also handles cleanup of parallel (or serial) jobs.
-
 \*---------------------------------------------------------------------------*/
 
-#ifndef parRun_H
-#define parRun_H
-
-#include "Pstream.H"
-#include "IOstreams.H"
+#ifndef cplRun_H
+#define cplRun_H
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
@@ -45,62 +35,31 @@ namespace Foam
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class ParRunControl Declaration
+                           Class CplRunControl Declaration
 \*---------------------------------------------------------------------------*/
 
-class ParRunControl
+class CplRunControl
 {
-    bool parallel_;
-    bool distributed_;
+    bool RunCpl;
 
 public:
 
-    //- Default construct
-    ParRunControl()
+    CplRunControl()
     :
-        parallel_(false),
-        distributed_(false)
+        RunCpl(false)
     {}
 
-    //- Destructor. Shutdown (finalize) MPI as required
-    ~ParRunControl()
-    {
-        if (parallel_)
-        {
-            Info<< "Finalising parallel run" << endl;
-        }
+    ~CplRunControl()
+    {}
 
-        Pstream::shutdown();
+    void runCpl()
+    {
+        RunCpl = true;
     }
 
-
-    //- Initialize Pstream for a parallel run
-    void runPar(int& argc, char**& argv, bool needsThread, bool coupled=false)
+    bool cplRun() const
     {
-        if (!Pstream::init(argc, argv, needsThread, coupled))
-        {
-            Info<< "Failed to start parallel run" << endl;
-            Pstream::exit(1);
-        }
-        parallel_ = true;
-    }
-
-    //- True if this is parallel run.
-    bool parRun() const
-    {
-        return parallel_;
-    }
-
-    //- True if this is a parallel run and uses distributed roots.
-    bool distributed() const
-    {
-        return parallel_ && distributed_;
-    }
-
-    //- Set use of distributed roots.
-    void distributed(bool on)
-    {
-        distributed_ = (parallel_ ? on : false);
+        return RunCpl;
     }
 };
 

@@ -45,6 +45,8 @@ Description
     Default command-line options:
       - \par -case \<dir\>
         Select a case directory instead of the current working directory
+      - \par -coupled
+        Specify case as a coupled job
       - \par -decomposeParDict \<file\>
         Read decomposePar dictionary from specified location
       - \par -parallel
@@ -104,6 +106,7 @@ SourceFiles
 #include "HashSet.H"
 #include "fileName.H"
 #include "parRun.H"
+#include "cplRun.H"
 #include "ITstream.H"
 #include "dlLibraryTable.H"
 #include "OSspecific.H"
@@ -131,8 +134,11 @@ class argList
         //- Track enabled/disabled checking of processor directories state
         static bool checkProcessorDirectories_;
 
-        //- Switch on/off parallel mode.
-        //  Construct first so destructor is done last.
+		//- Switch on/off coupled mode. Has to be first to be constructed
+		//  so destructor is done last.
+		CplRunControl cplRunControl_;
+
+		//- Switch on/off parallel mode.
         ParRunControl parRunControl_;
 
         //- The arguments after removing known options
@@ -212,6 +218,9 @@ public:
 
         //- A list of valid parallel options
         static HashTable<string> validParOptions;
+
+        //- A list of valid coupling options
+		static HashTable<string> validCplOptions;
 
         //- A list of aliases for options.
         //  Stored as (alias = canonical, version)
@@ -345,6 +354,9 @@ public:
 
         //- Return the ParRunControl
         inline const ParRunControl& parRunControl() const;
+
+        //- Return cplRunControl
+        inline const CplRunControl& cplRunControl() const;
 
         //- Mutable access to the loaded dynamic libraries
         inline dlLibraryTable& libs() const;
