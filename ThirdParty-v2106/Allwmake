@@ -133,6 +133,22 @@ else
     warnNotFound ADIOS2   # is optional
 fi
 
+# MUI is optional
+echo ========================================
+echo Build MUI
+if [ -n "$MUI_ARCH_PATH" ]
+then
+(
+    if [ -r $MUI_ARCH_PATH/mui.h ]
+    then
+        echo "    MUI headers in $MUI_ARCH_PATH"      
+    else
+        ./makeMUI
+    fi
+)
+else
+    echo "    optional component was not found"
+fi
 
 #------------------------------------------------------------------------------
 
