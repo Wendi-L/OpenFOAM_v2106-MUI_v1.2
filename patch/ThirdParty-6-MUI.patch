@@ -1,0 +1,153 @@
+diff -ruN ../originalVersion/ThirdParty-6/Allwmake ../finalVersion/ThirdParty-6/Allwmake
+--- ../originalVersion/ThirdParty-6/Allwmake	2019-08-22 17:02:47.581196500 +0100
++++ ../finalVersion/ThirdParty-6/Allwmake	2019-08-22 17:15:31.092879100 +0100
+@@ -370,6 +370,23 @@
+     echo "    optional component CGAL was not found"
+ fi
+ 
++# MUI is optional
++echo ========================================
++echo Build MUI
++if [ -n "$MUI_ARCH_PATH" ]
++then
++(
++    if [ -r $MUI_ARCH_PATH/mui.h ]
++    then
++        echo "    MUI headers in $MUI_ARCH_PATH"      
++    else
++        ./makeMUI
++    fi
++)
++else
++    echo "    optional component was not found"
++fi
++
+ echo
+ echo ========================================
+ echo Done ThirdParty Allwmake
+diff -ruN ../originalVersion/ThirdParty-6/makeMUI ../finalVersion/ThirdParty-6/makeMUI
+--- ../originalVersion/ThirdParty-6/makeMUI	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/ThirdParty-6/makeMUI	2019-08-22 17:15:31.104923000 +0100
+@@ -0,0 +1,112 @@
++#!/bin/sh
++#------------------------------------------------------------------------------
++# =========                 |
++# \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
++#  \\    /   O peration     |
++#   \\  /    A nd           | Copyright (C) 2012-2014 OpenFOAM Foundation
++#    \\/     M anipulation  |
++#------------------------------------------------------------------------------
++# License
++#     This file is part of OpenFOAM.
++#
++#     OpenFOAM is free software: you can redistribute it and/or modify it
++#     under the terms of the GNU General Public License as published by
++#     the Free Software Foundation, either version 3 of the License, or
++#     (at your option) any later version.
++#
++#     OpenFOAM is distributed in the hope that it will be useful, but WITHOUT
++#     ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
++#     FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
++#     for more details.
++#
++#     You should have received a copy of the GNU General Public License
++#     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
++#
++# Script
++#     makeMUI
++#
++# Description
++#     Build script for MUI
++#
++# Note
++#     Not really building MUI as it is header only C++ and so just setting
++#	  paths, however following existing naming standards for scripts.
++#
++#------------------------------------------------------------------------------
++set -x
++
++muiPACKAGE=MUI
++
++#------------------------------------------------------------------------------
++# run from third-party directory only
++wmakeCheckPwd "$WM_THIRD_PARTY_DIR" || {
++    echo "Error: Current directory is not \$WM_THIRD_PARTY_DIR"
++    echo "    The environment variables are inconsistent with the installation."
++    echo "    Check the OpenFOAM entries in your dot-files and source them."
++    exit 1
++}
++. etc/tools/ThirdPartyFunctions
++#------------------------------------------------------------------------------
++
++usage() {
++    exec 1>&2
++    while [ "$#" -ge 1 ]; do echo "$1"; shift; done
++    cat<<USAGE
++
++usage: ${0##*/}
++options:
++  -help
++
++* copies MUI headers to appropriate path with
++      $muiPACKAGE
++
++USAGE
++    exit 1
++}
++
++
++# ensure CMake gets the correct C++ compiler
++[ -n "$WM_CXX" ] && export CXX="$WM_CXX"
++
++
++# parse options
++while [ "$#" -gt 0 ]
++do
++    case "$1" in
++    -h | -help)
++        usage
++        ;;
++    *)
++        usage "unknown option/argument: '$*'"
++        ;;
++    esac
++done
++
++#
++# Build MUI
++#
++#   MUI_SOURCE_DIR : location of the original sources
++#   MUI_DIR        : location of the installed program
++
++MUI_SOURCE_DIR=$WM_THIRD_PARTY_DIR/$muiPACKAGE
++if [ ! -d "$installBASE" ]
++then
++mkdir $installBASE
++fi
++MUI_ARCH_PATH=$installBASE/$muiPACKAGE
++MUI_DIR=$MUI_ARCH_PATH
++(
++	# Remove pre-existing MUI install directory
++	if [ -d "$MUI_DIR" ]
++	then
++	rm -r $MUI_DIR
++	fi
++	mkdir $MUI_DIR
++
++	# Copy to install directory
++	cp -r $MUI_SOURCE_DIR/* $MUI_DIR/
++
++    echo "Done MUI"
++)
++
++# ----------------------------------------------------------------- end-of-file
+diff -ruN ../originalVersion/ThirdParty-6/MUI/README ../finalVersion/ThirdParty-6/MUI/README
+--- ../originalVersion/ThirdParty-6/MUI/README	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/ThirdParty-6/MUI/README	2019-08-22 17:15:31.113435000 +0100
+@@ -0,0 +1 @@
++Place MUI files here
+diff -ruN ../originalVersion/ThirdParty-6/README-MUI ../finalVersion/ThirdParty-6/README-MUI
+--- ../originalVersion/ThirdParty-6/README-MUI	1970-01-01 00:00:00.000000000 +0000
++++ ../finalVersion/ThirdParty-6/README-MUI	2019-08-22 17:15:31.120954900 +0100
+@@ -0,0 +1 @@
++Place MUI library files (or link) into MUI folder before running ./Allwmake 
