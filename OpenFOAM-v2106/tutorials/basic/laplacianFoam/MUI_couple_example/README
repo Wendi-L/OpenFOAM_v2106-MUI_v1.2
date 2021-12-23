@@ -1,0 +1,16 @@
+This is a test case for coupling two instances through MUI of laplacianFoam
+
+This example case does the following:
+
+    1. Runs two instances of laplacianFoam simultaneously, each using 2 MPI process locally.
+    2. Each instance is considered to be a seperate domain (named domain1 and domain2 respectively).
+    3. Two 3D MUI coupling interfaces are created (interface_1 and interface_2) and each solver connects to them at the start using the createCouplings.H file.
+    4. When the main control object is instantiated by each laplacianFoam solver, a single data value is pushed and fetched through each interface and the result printed to the console.
+    5. All console output is placed into files in the “Logs” folder.
+
+There are a number of scripts in the base of the case to ease running:
+
+    1. Allclean: This completely cleans the cases in the case folders.
+    2. AllrunCoupled: This completely cleans, executes the coupled case (using mpirun) and postprocesses the cases in each case folder.
+
+The coupling control dictionaries are located at system/couplingDict (this is described in greater detail in the README-MUI document in the base of the repository).

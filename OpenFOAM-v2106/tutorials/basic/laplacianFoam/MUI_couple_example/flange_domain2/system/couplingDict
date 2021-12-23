@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2106                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      controlDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+couplingName	domain2; //Coupling domain name
+refLength	1;  //Length reference value for anything used in the coupling interfaces (default=1)
+refTime		1;  //Time reference value for anything used in the coupling interfaces (default=1)
+
+couplingConfigurations
+( 
+    TwoDInterfaces //2D coupling interfaces
+    {
+    }
+
+    ThreeDInterfaces //3D coupling interfaces
+    {
+        interface_1
+	    {
+	        smartSend				yes; 
+		    sending					yes;
+		    //domainSendStart		(0 0 0); //Refines smartSend domain values if provided
+		    //domainSendEnd			(1 1 1); //Refines smartSend domain values if provided
+		    receiving				yes;
+		    //domainReceiveStart	(0 0 0); //Refines smartSend domain values if provided
+		    //domainReceiveEnd		(1 1 1); //Refines smartSend domain values if provided   
+		    iterationCoupling		no; //If set to yes then integer time-stamps are expected to be used in MUI commits (don't forget to update MUI time_type in the library)  
+	    }	
+
+        interface_2
+		{
+	    	smartSend				yes; 
+		    sending					yes;
+		    //domainSendStart		(0 0 0); //Refines smartSend domain values if provided
+		    //domainSendEnd			(1 1 1); //Refines smartSend domain values if provided
+		    receiving				yes;
+		    //domainReceiveStart	(0 0 0); //Refines smartSend domain values if provided
+		    //domainReceiveEnd		(1 1 1); //Refines smartSend domain values if provided   
+		    iterationCoupling		no; //If set to yes then integer time-stamps are expected to be used in MUI commits (don't forget to update MUI time_type in the library)
+		}
+    }
+);
+
+// ************************************************************************* //

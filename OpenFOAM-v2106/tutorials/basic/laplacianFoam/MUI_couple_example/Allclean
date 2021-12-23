@@ -1,0 +1,20 @@
+#!/bin/bash
+
+domain1=${PWD}/flange_domain1
+domain2=${PWD}/flange_domain2
+
+if [ -d "Logs" ]; 
+then
+  rm -rf Logs
+fi
+
+# clean domain1
+cd ${domain1}
+./Allclean
+cd ..
+
+# clean domain2
+cd ${domain2}
+./Allclean
+cd ..
+
