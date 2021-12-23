@@ -1,6 +1,13 @@
+sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
+sinclude $(RULES)/mplib$(WM_MPLIB)
+sinclude $(GENERAL_RULES)/MUI
+
 phaseSystem = $(LIB_SRC)/phaseSystemModels/twoPhaseEuler
 
 EXE_INC = \
+    $(PFLAGS) \
+    $(PINC) \
+    ${MUI_INC} \
     -I${phaseSystem}/phaseCompressibleTurbulenceModels/lnInclude \
     -I${phaseSystem}/twoPhaseSystem/lnInclude \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
@@ -14,6 +21,7 @@ EXE_INC = \
     -I$(LIB_SRC)/TurbulenceModels/phaseCompressible/lnInclude
 
 EXE_LIBS = \
+    $(PLIBS) \
     -lfiniteVolume \
     -lfvOptions \
     -lmeshTools \

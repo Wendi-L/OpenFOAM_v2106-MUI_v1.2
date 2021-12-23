@@ -1,4 +1,11 @@
+sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
+sinclude $(RULES)/mplib$(WM_MPLIB)
+sinclude $(GENERAL_RULES)/MUI
+
 EXE_INC = \
+    $(PFLAGS) \
+    $(PINC) \
+    ${MUI_INC} \
     -I../VoF \
     -ItwoPhaseMixtureThermo \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
@@ -13,6 +20,7 @@ EXE_INC = \
     -IVoFphaseCompressibleTurbulenceModels/lnInclude
 
 EXE_LIBS = \
+    $(PLIBS) \
     -lfiniteVolume \
     -lfvOptions \
     -lmeshTools \

@@ -1,4 +1,11 @@
+sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
+sinclude $(RULES)/mplib$(WM_MPLIB)
+sinclude $(GENERAL_RULES)/MUI
+
 EXE_INC = \
+    $(PFLAGS) \
+    $(PINC) \
+    ${MUI_INC} \
     -I../twoPhaseMixtureThermo \
     -I$(LIB_SRC)/transportModels/compressible/lnInclude \
     -I$(LIB_SRC)/thermophysicalModels/basic/lnInclude \
@@ -11,6 +18,7 @@ EXE_INC = \
     -I$(LIB_SRC)/meshTools/lnInclude
 
 LIB_LIBS = \
+    $(PLIBS) \
     -ltwoPhaseMixtureThermo \
     -lcompressibleTransportModels \
     -lfluidThermophysicalModels \

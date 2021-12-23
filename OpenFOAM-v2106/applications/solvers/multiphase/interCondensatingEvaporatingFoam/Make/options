@@ -1,8 +1,15 @@
+sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
+sinclude $(RULES)/mplib$(WM_MPLIB)
+sinclude $(GENERAL_RULES)/MUI
+
 interPhaseChangeFoam = $(FOAM_SOLVERS)/multiphase/interPhaseChangeFoam
 interFoam = $(FOAM_SOLVERS)/multiphase/interFoam
 VoF = $(FOAM_SOLVERS)/multiphase/VoF
 
 EXE_INC = \
+    $(PFLAGS) \
+    $(PINC) \
+    ${MUI_INC} \
     -I$(interPhaseChangeFoam) \
     -I$(interFoam) \
     -I$(VoF) \
@@ -21,6 +28,7 @@ EXE_INC = \
     -I$(LIB_SRC)/TurbulenceModels/incompressible/lnInclude
 
 EXE_LIBS = \
+    $(PLIBS) \
     -lfiniteVolume \
     -lfvOptions \
     -lmeshTools \

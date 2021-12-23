@@ -1,6 +1,13 @@
+sinclude $(GENERAL_RULES)/mplib$(WM_MPLIB)
+sinclude $(RULES)/mplib$(WM_MPLIB)
+sinclude $(GENERAL_RULES)/MUI
+
 phaseSystem = $(LIB_SRC)/phaseSystemModels/reactingEuler
 
 EXE_INC = \
+    $(PFLAGS) \
+    $(PINC) \
+    ${MUI_INC} \
     -I.. \
     -I$(FOAM_SOLVERS)/multiphase/reactingTwoPhaseEulerFoam \
     -I${phaseSystem}/twoPhaseSystem/lnInclude \
@@ -24,6 +31,7 @@ EXE_INC = \
     -I$(LIB_SRC)/regionModels/regionModel/lnInclude
 
 EXE_LIBS = \
+    $(PLIBS) \
     -lfiniteVolume \
     -lfvOptions \
     -lmeshTools \
