@@ -1092,9 +1092,13 @@ void Foam::UPstream::allocatePstreamCommunicator
                 << "world communicator should always be index "
                 << UPstream::worldComm << Foam::exit(FatalError);
         }
-
+        #ifdef USE_MUI
+            //Use world returned by MUI, based on MPI MPMD model, calls MPI_Init_thread inside MUI function
+            PstreamGlobals::MPICommunicators_[index] = PstreamGlobals::commWorld_;
+        #else
         PstreamGlobals::MPICommunicators_[index] = MPI_COMM_WORLD;
-        MPI_Comm_group(MPI_COMM_WORLD, &PstreamGlobals::MPIGroups_[index]);
+        #endif
+        MPI_Comm_group(PstreamGlobals::MPICommunicators_[index], &PstreamGlobals::MPIGroups_[index]);
         MPI_Comm_rank
         (
             PstreamGlobals::MPICommunicators_[index],

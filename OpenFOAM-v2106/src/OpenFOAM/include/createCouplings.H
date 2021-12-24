@@ -159,7 +159,7 @@
 
                         if (interfaceDict.found("domainSendStart"))
                         {
-                            sendStart[cI] = interfaceDict.lookup("domainSendStart");
+                            sendStart[cI] = vector(interfaceDict.lookup("domainSendStart"));
                             sendDomDefined = true;
                         }
                         else
@@ -171,7 +171,7 @@
                         {
                             if (interfaceDict.found("domainSendEnd"))
                             {
-                                sendEnd[cI] = interfaceDict.lookup("domainSendEnd");
+                                sendEnd[cI] = vector(interfaceDict.lookup("domainSendEnd"));
                             }
                             else
                             {
@@ -268,7 +268,7 @@
 
                         if (interfaceDict.found("domainReceiveStart"))
                         {
-                            rcvStart[cI] = interfaceDict.lookup("domainReceiveStart");
+                            rcvStart[cI] = vector(interfaceDict.lookup("domainReceiveStart"));
                             rcvDomDefined = true;
                         }
                         else
@@ -280,7 +280,7 @@
                         {
                             if (interfaceDict.found("domainReceiveEnd"))
                             {
-                                rcvEnd[cI] = interfaceDict.lookup("domainReceiveEnd");
+                                rcvEnd[cI] = vector(interfaceDict.lookup("domainReceiveEnd"));
                             }
                             else
                             {

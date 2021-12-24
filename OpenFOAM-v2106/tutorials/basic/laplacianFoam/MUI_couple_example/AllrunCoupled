@@ -1,4 +1,7 @@
-#!/bin/bash
+#!/bin/sh
+cd "${0%/*}" || exit                                # Run from this directory
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions        # Tutorial run functions
+#------------------------------------------------------------------------------
 
 domain1=${PWD}/flange_domain1
 domain2=${PWD}/flange_domain2

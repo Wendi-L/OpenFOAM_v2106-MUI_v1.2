@@ -132,16 +132,17 @@ Foam::simpleControl::simpleControl
     }
 }
 
-Foam::simpleControl::simpleControl(fvMesh& mesh, const word& algorithmName, couplingInterface2d& twoDInterfaces, couplingInterface3d& threeDInterfaces)
+Foam::simpleControl::simpleControl
+(
+    fvMesh& mesh,
+    const word& algorithmName,
+	couplingInterface2d& twoDInterfaces,
+	couplingInterface3d& threeDInterfaces
+)
 :
-    fluidSolutionControl(mesh, algorithmName),
-    singleRegionConvergenceControl
-    (
-        static_cast<singleRegionSolutionControl&>(*this)
-    )
+    solutionControl(mesh, algorithmName)
 {
     read();
-    printResidualControls();
 
 #ifdef USE_MUI
     //- If there are 2D interfaces defined in couplingDict then iterate through
