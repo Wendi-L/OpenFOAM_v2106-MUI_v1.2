@@ -10,6 +10,18 @@ individual and group contributors, integrations
 (eg, from FOAM-extend and OpenFOAM Foundation Ltd) as well as
 [governance guided activities](https://www.openfoam.com/governance/).
 
+## About OpenFOAM-MUI release
+Author: Wendi Liu (wendi.liu@stfc.ac.uk) (derived from OpenFOAM MUI Patch by Stephen M. Longshaw)
+Date: 24/12/2021 (Merry Christmas!)
+
+| OpenFOAM-v2106 with MUI-v1.2 README |
+
+This release integrates the Multiscale Universal Interface (MUI) library (MUI V1.2)
+into OpenFOAM-v2106 and the associated ThirdParty-v2106 folder 
+
+MUI can be obtained from: https://github.com/MxUI/MUI
+
+Please read README-MUI.md in OpenFOAM-v2106 and ThirdParty-v2106 for more details.
 
 ## License
 

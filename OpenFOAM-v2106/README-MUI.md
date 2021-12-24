@@ -1,4 +1,9 @@
-The MUI coupling library* is integrated into this OpenFOAM installation (and can therefore be used in any application).
+## OpenFOAM-v2106 with MUI-v1.2 README 
+
+Author: Wendi Liu (wendi.liu@stfc.ac.uk) (derived from OpenFOAM MUI Patch by Stephen M. Longshaw)
+Date: 24/12/2021 (Merry Christmas!)
+
+The MUI coupling library (MUI v1.2)* is integrated into this OpenFOAM (v2106) installation (and can therefore be used in any application).
 
 General MUI coupling is achieved using the following new source files:
 
