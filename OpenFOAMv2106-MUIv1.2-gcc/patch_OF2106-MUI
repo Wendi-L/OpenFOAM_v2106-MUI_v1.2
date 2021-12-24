@@ -1,0 +1,39 @@
+#!/bin/bash
+
+tp_folder=ThirdParty-v2106
+of_folder=OpenFOAM-v2106
+
+if [ ! -d ${tp_folder} ];
+then
+  echo "The ThirdParty folder cannot be found" >&2
+  exit 1
+fi
+
+if [ ! -d ${of_folder} ];
+then
+  echo "The OpenFOAM folder cannot be found" >&2
+  exit 1
+fi
+
+# Patch ThirdParty folder and update permissions
+patch -p2 < ThirdParty-v2106-MUI.patch
+cd ${tp_folder}
+chmod a+x makeMUI
+cd ..
+
+# Patch OpenFOAM folder and update permissions
+patch -p2 < OpenFOAM-v2106-MUI.patch
+cd ${of_folder}/tutorials/basic/laplacianFoam/MUI_couple_example
+chmod a+x Allclean
+chmod a+x AllrunCoupled
+cd flange_domain1
+chmod a+x Allclean
+chmod a+x Allpostprocess
+chmod a+x Allpreprocess
+chmod a+x Allrun
+cd ..
+cd flange_domain2
+chmod a+x Allclean
+chmod a+x Allpostprocess
+chmod a+x Allpreprocess
+chmod a+x Allrun

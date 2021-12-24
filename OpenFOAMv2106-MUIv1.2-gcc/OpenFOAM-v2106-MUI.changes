@@ -1,0 +1,162 @@
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/acoustic/acousticFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/acoustic/acousticFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/basic/laplacianFoam/laplacianFoam.C and ../finalVersion/OpenFOAM-v2106/applications/solvers/basic/laplacianFoam/laplacianFoam.C differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/basic/laplacianFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/basic/laplacianFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/basic/laplacianFoam/overLaplacianDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/basic/laplacianFoam/overLaplacianDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/basic/potentialFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/basic/potentialFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/basic/potentialFoam/overPotentialFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/basic/potentialFoam/overPotentialFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/basic/scalarTransportFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/basic/scalarTransportFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/chemFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/chemFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/coldEngineFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/coldEngineFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/fireFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/fireFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/PDRFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/PDRFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/reactingFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/reactingFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/reactingFoam/rhoReactingBuoyantFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/reactingFoam/rhoReactingBuoyantFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/reactingFoam/rhoReactingFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/reactingFoam/rhoReactingFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/XiFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/XiFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/XiFoam/XiDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/XiFoam/XiDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/combustion/XiFoam/XiEngineFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/combustion/XiFoam/XiEngineFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoCentralFoam/BCs/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoCentralFoam/BCs/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoCentralFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoCentralFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoCentralFoam/rhoCentralDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoCentralFoam/rhoCentralDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoPimpleAdiabaticFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoPimpleAdiabaticFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoPimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoPimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoPimpleFoam/overRhoPimpleDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoPimpleFoam/overRhoPimpleDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoSimpleFoam/overRhoSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoSimpleFoam/overRhoSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoSimpleFoam/rhoPorousSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/rhoSimpleFoam/rhoPorousSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/sonicFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/sonicFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/sonicFoam/sonicDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/sonicFoam/sonicDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/compressible/sonicFoam/sonicLiquidFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/compressible/sonicFoam/sonicLiquidFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/discreteMethods/dsmc/dsmcFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/discreteMethods/dsmc/dsmcFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/discreteMethods/molecularDynamics/mdEquilibrationFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/discreteMethods/molecularDynamics/mdEquilibrationFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/discreteMethods/molecularDynamics/mdFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/discreteMethods/molecularDynamics/mdFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/DNS/dnsFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/DNS/dnsFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/electromagnetics/electrostaticFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/electromagnetics/electrostaticFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/electromagnetics/magneticFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/electromagnetics/magneticFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/electromagnetics/mhdFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/electromagnetics/mhdFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/financial/financialFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/financial/financialFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/finiteArea/liquidFilmFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/finiteArea/liquidFilmFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/finiteArea/sphereSurfactantFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/finiteArea/sphereSurfactantFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/finiteArea/surfactantFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/finiteArea/surfactantFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantBoussinesqPimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantBoussinesqPimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantBoussinesqSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantBoussinesqSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantPimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantPimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantPimpleFoam/overBuoyantPimpleDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantPimpleFoam/overBuoyantPimpleDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/buoyantSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/chtMultiRegionFoam/chtMultiRegionSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/chtMultiRegionFoam/chtMultiRegionSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/chtMultiRegionFoam/chtMultiRegionTwoPhaseEulerFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/chtMultiRegionFoam/chtMultiRegionTwoPhaseEulerFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/chtMultiRegionFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/chtMultiRegionFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/solidFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/solidFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/thermoFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/heatTransfer/thermoFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/adjointOptimisationFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/adjointOptimisationFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/adjointShapeOptimizationFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/adjointShapeOptimizationFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/boundaryFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/boundaryFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/icoFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/icoFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/nonNewtonianIcoFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/nonNewtonianIcoFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/pimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/pimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/pimpleFoam/overPimpleDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/pimpleFoam/overPimpleDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/pimpleFoam/SRFPimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/pimpleFoam/SRFPimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/pisoFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/pisoFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/shallowWaterFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/shallowWaterFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/simpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/simpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/simpleFoam/overSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/simpleFoam/overSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/simpleFoam/porousSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/simpleFoam/porousSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/incompressible/simpleFoam/SRFSimpleFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/incompressible/simpleFoam/SRFSimpleFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/coalChemistryFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/coalChemistryFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/MPPICDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/DPMDyMFoam/MPPICDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/DPMTurbulenceModels/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/DPMTurbulenceModels/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/MPPICFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/DPMFoam/MPPICFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/icoUncoupledKinematicParcelDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/icoUncoupledKinematicParcelDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/icoUncoupledKinematicParcelFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/reactingParcelFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/reactingParcelFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/reactingParcelFoam/reactingHeterogenousParcelFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/reactingParcelFoam/reactingHeterogenousParcelFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/reactingParcelFoam/simpleReactingParcelFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/reactingParcelFoam/simpleReactingParcelFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/simpleCoalParcelFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/simpleCoalParcelFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/sprayFoam/engineFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/sprayFoam/engineFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/sprayFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/sprayFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/sprayFoam/simpleSprayFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/sprayFoam/simpleSprayFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/sprayFoam/sprayDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/sprayFoam/sprayDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/uncoupledKinematicParcelDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/lagrangian/uncoupledKinematicParcelFoam/uncoupledKinematicParcelDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/cavitatingFoam/cavitatingDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/cavitatingFoam/cavitatingDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/cavitatingFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/cavitatingFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/compressibleInterDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/compressibleInterDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/compressibleInterFilmFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/compressibleInterFilmFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/compressibleInterIsoFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/compressibleInterIsoFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/overCompressibleInterDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/overCompressibleInterDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/surfaceTensionModels/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/surfaceTensionModels/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/twoPhaseMixtureThermo/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/twoPhaseMixtureThermo/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/VoFphaseCompressibleTurbulenceModels/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleInterFoam/VoFphaseCompressibleTurbulenceModels/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleMultiphaseInterFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleMultiphaseInterFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleMultiphaseInterFoam/multiphaseMixtureThermo/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/compressibleMultiphaseInterFoam/multiphaseMixtureThermo/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/driftFluxFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/driftFluxFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/driftFluxFoam/mixtureViscosityModels/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/driftFluxFoam/mixtureViscosityModels/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/driftFluxFoam/relativeVelocityModels/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/driftFluxFoam/relativeVelocityModels/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/icoReactingMultiphaseInterFoam/laserDTRM/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/icoReactingMultiphaseInterFoam/laserDTRM/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/icoReactingMultiphaseInterFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/icoReactingMultiphaseInterFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interCondensatingEvaporatingFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interCondensatingEvaporatingFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interCondensatingEvaporatingFoam/temperaturePhaseChangeTwoPhaseMixtures/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interCondensatingEvaporatingFoam/temperaturePhaseChangeTwoPhaseMixtures/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interFoam/interMixingFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interFoam/interMixingFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interFoam/overInterDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interFoam/overInterDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interIsoFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interIsoFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interPhaseChangeFoam/interPhaseChangeDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interPhaseChangeFoam/interPhaseChangeDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interPhaseChangeFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interPhaseChangeFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interPhaseChangeFoam/overInterPhaseChangeDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interPhaseChangeFoam/overInterPhaseChangeDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interPhaseChangeFoam/phaseChangeTwoPhaseMixtures/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/interPhaseChangeFoam/phaseChangeTwoPhaseMixtures/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/MPPICInterFoam/compressibleTwoPhaseMixtureTurbulenceModels/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/MPPICInterFoam/compressibleTwoPhaseMixtureTurbulenceModels/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/MPPICInterFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/MPPICInterFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/multiphaseEulerFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/multiphaseEulerFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/multiphaseInterFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/multiphaseInterFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/multiphaseInterFoam/multiphaseMixture/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/multiphaseInterFoam/multiphaseMixture/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/potentialFreeSurfaceFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/potentialFreeSurfaceFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/potentialFreeSurfaceFoam/potentialFreeSurfaceDyMFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/potentialFreeSurfaceFoam/potentialFreeSurfaceDyMFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/reactingMultiphaseEulerFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/reactingMultiphaseEulerFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/reactingTwoPhaseEulerFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/reactingTwoPhaseEulerFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/twoLiquidMixingFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/twoLiquidMixingFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/multiphase/twoPhaseEulerFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/multiphase/twoPhaseEulerFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/stressAnalysis/solidDisplacementFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/stressAnalysis/solidDisplacementFoam/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/applications/solvers/stressAnalysis/solidEquilibriumDisplacementFoam/Make/options and ../finalVersion/OpenFOAM-v2106/applications/solvers/stressAnalysis/solidEquilibriumDisplacementFoam/Make/options differ
+Only in ../finalVersion/OpenFOAM-v2106/etc/config.csh: MUI
+Files ../originalVersion/OpenFOAM-v2106/etc/config.csh/setup and ../finalVersion/OpenFOAM-v2106/etc/config.csh/setup differ
+Only in ../finalVersion/OpenFOAM-v2106/etc/config.sh: MUI
+Files ../originalVersion/OpenFOAM-v2106/etc/config.sh/setup and ../finalVersion/OpenFOAM-v2106/etc/config.sh/setup differ
+Only in ../originalVersion/OpenFOAM-v2106/modules: adios
+Only in ../originalVersion/OpenFOAM-v2106/modules: avalanche
+Only in ../originalVersion/OpenFOAM-v2106/modules: cfmesh
+Only in ../originalVersion/OpenFOAM-v2106/modules: external-solver
+Only in ../originalVersion/OpenFOAM-v2106/modules: OpenQBMM
+Only in ../originalVersion/OpenFOAM-v2106/modules: visualization
+Files ../originalVersion/OpenFOAM-v2106/README.md and ../finalVersion/OpenFOAM-v2106/README.md differ
+Only in ../finalVersion/OpenFOAM-v2106: README-MUI.md
+Files ../originalVersion/OpenFOAM-v2106/src/finiteVolume/cfdTools/general/include/fvCFD.H and ../finalVersion/OpenFOAM-v2106/src/finiteVolume/cfdTools/general/include/fvCFD.H differ
+Only in ../finalVersion/OpenFOAM-v2106/src/finiteVolume/cfdTools/general/include: fvCoupling.H
+Files ../originalVersion/OpenFOAM-v2106/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.C and ../finalVersion/OpenFOAM-v2106/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.C differ
+Files ../originalVersion/OpenFOAM-v2106/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.H and ../finalVersion/OpenFOAM-v2106/src/finiteVolume/cfdTools/general/solutionControl/simpleControl/simpleControl.H differ
+Files ../originalVersion/OpenFOAM-v2106/src/finiteVolume/Make/options and ../finalVersion/OpenFOAM-v2106/src/finiteVolume/Make/options differ
+Only in ../finalVersion/OpenFOAM-v2106/src/OpenFOAM: coupling
+Files ../originalVersion/OpenFOAM-v2106/src/OpenFOAM/db/IOstreams/Pstreams/UPstream.H and ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/db/IOstreams/Pstreams/UPstream.H differ
+Files ../originalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList/argList.C and ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList/argList.C differ
+Files ../originalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList/argList.H and ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList/argList.H differ
+Files ../originalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList/argListI.H and ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList/argListI.H differ
+Only in ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList: cplRun.H
+Files ../originalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList/parRun.H and ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/global/argList/parRun.H differ
+Only in ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/include: createCouplingData.H
+Only in ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/include: createCouplings.H
+Files ../originalVersion/OpenFOAM-v2106/src/OpenFOAM/include/createMesh.H and ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/include/createMesh.H differ
+Only in ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/include: deleteCouplings.H
+Files ../originalVersion/OpenFOAM-v2106/src/OpenFOAM/Make/files and ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/Make/files differ
+Files ../originalVersion/OpenFOAM-v2106/src/OpenFOAM/Make/options and ../finalVersion/OpenFOAM-v2106/src/OpenFOAM/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/src/optimisation/adjointOptimisation/adjoint/Make/options and ../finalVersion/OpenFOAM-v2106/src/optimisation/adjointOptimisation/adjoint/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/src/Pstream/dummy/UPstream.C and ../finalVersion/OpenFOAM-v2106/src/Pstream/dummy/UPstream.C differ
+Files ../originalVersion/OpenFOAM-v2106/src/Pstream/mpi/Make/options and ../finalVersion/OpenFOAM-v2106/src/Pstream/mpi/Make/options differ
+Files ../originalVersion/OpenFOAM-v2106/src/Pstream/mpi/PstreamGlobals.C and ../finalVersion/OpenFOAM-v2106/src/Pstream/mpi/PstreamGlobals.C differ
+Files ../originalVersion/OpenFOAM-v2106/src/Pstream/mpi/PstreamGlobals.H and ../finalVersion/OpenFOAM-v2106/src/Pstream/mpi/PstreamGlobals.H differ
+Files ../originalVersion/OpenFOAM-v2106/src/Pstream/mpi/UPstream.C and ../finalVersion/OpenFOAM-v2106/src/Pstream/mpi/UPstream.C differ
+Only in ../finalVersion/OpenFOAM-v2106/tutorials/basic/laplacianFoam: MUI_couple_example
+Files ../originalVersion/OpenFOAM-v2106/wmake/rules/General/general and ../finalVersion/OpenFOAM-v2106/wmake/rules/General/general differ
+Files ../originalVersion/OpenFOAM-v2106/wmake/rules/General/mplib-x86_64-HPMPI and ../finalVersion/OpenFOAM-v2106/wmake/rules/General/mplib-x86_64-HPMPI differ
+Only in ../finalVersion/OpenFOAM-v2106/wmake/rules/General: MUI
