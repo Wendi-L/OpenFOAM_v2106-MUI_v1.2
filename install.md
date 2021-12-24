@@ -47,10 +47,10 @@ ln -s /usr/bin/mpirun.openmpi OpenFOAM-v2106/bin/mpirun
 Patch OpenFOAM and ThirdParty with MUI:
 ---------------------------------------------
 ```bash
-cd ${INSTALL_FOLDER}/OpenFOAM/V6/embedMUI
-cp ${INSTALL_FOLDER}/OpenFOAM/embedMUIPatch/V6/* ./
-chmod +777 patch_OF6-MUI
-./patch_OF6-MUI
+cd ${INSTALL_FOLDER}/OpenFOAM/V2106/embedMUI
+cp OpenFOAMv2106-MUIv1.2-gcc/* ./
+chmod +777 patch_OF2106-MUI
+./patch_OF2106-MUI
 ```
 
 For building OpenFOAM+ itself, it depends on whether you have installed the i686 or x86_64 architecture of Ubuntu. To check this, run:
