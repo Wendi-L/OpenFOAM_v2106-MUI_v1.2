@@ -1,7 +1,7 @@
-Instructions for compiling OpenFOAM v2106 with MUI v1.1.3 embeded for Ubuntu
+Instructions for compiling OpenFOAM v2106 with MUI v1.2 embeded for Ubuntu
 ======================================================
 
-These instructions are for compiling OpenFOAM [v2106](https://www.openfoam.com/news/main-news/openfoam-v2106) with MUI [v1.1.3] (https://github.com/MxUI/MUI/tree/1.1.3) embeded on Ubuntu, based on instructions from OpenFOAM [WiKi](http://openfoamwiki.net/index.php/Installation/Linux/OpenFOAM-v1806/Ubuntu).
+These instructions are for compiling OpenFOAM [v2106](https://www.openfoam.com/news/main-news/openfoam-v2106) with MUI [v1.2] (https://github.com/MxUI/MUI/tree/1.2) embeded on Ubuntu, based on instructions from OpenFOAM [WiKi](http://openfoamwiki.net/index.php/Installation/Linux/OpenFOAM-v1806/Ubuntu).
 
 Set installation folder:
 ---------------------------------------------
@@ -138,6 +138,7 @@ tar zxvf v2.6.0.tar.gz
 Build MUI v1.2:
 ---------------------------------------------
 ```bash
+ln -s /path/to/MUI-v1.2 MUI
 ./makeMUI
 ```
 
@@ -157,13 +158,13 @@ export QT_SELECT=qt5
 Compile OpenFOAM in somewhere between 30 minutes to 3-6 hours: 
 ---------------------------------------------
 ```bash
-./Allwmake -j 4
+./Allwmake
 ```
 
 Run it a second time for getting a summary of the installation:  
 ---------------------------------------------
 ```bash
-./Allwmake -j 4 > makeSummary.log 2>&1
+./Allwmake > makeSummary.log 2>&1
 ```
 
 Check if icoFoam is working:  
