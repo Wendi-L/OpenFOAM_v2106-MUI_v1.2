@@ -11,4 +11,6 @@ Please Note:
 
 2. Patch files inside the folder "OpenFOAMv2106-MUIv1.2-gcc" are also provided, in case the user prefer to patch the official OF-v2106 or check what has changed regard to the official OF-v2106 release, but the OpenFOAM-v2106 and ThirdParty-v2106 in this repository do not need to patch again.
 
-3. (Future work) This release has been tested with Ubuntu 20.04 and GCC 9.3.0. The General Rule need to change for other compilers.
+3. The install.md is an example of install the OF-v2106 embed with MUI-v1.2 on Ubuntu OS 20.04 with GCC 9.3.0 through the "patch official release" route. 
+
+4. (Future work) This release has been tested with Ubuntu 20.04 and GCC 9.3.0. The General Rule need to change for other compilers.
