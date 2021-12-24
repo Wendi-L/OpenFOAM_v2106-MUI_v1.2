@@ -184,7 +184,7 @@ Options:
   
   -decomposeParDict <file>
 
-                    Use specified file for decomposePar dictionary
+  Use specified file for decomposePar dictionary
 
   -dry-run          Check case set-up only using a single time step
 
@@ -221,67 +221,6 @@ cd $WM_PROJECT_DIR/tutorials/basic/laplacianFoam/MUI_couple_example
 If MUI communication inside OpenFOAM v2106 is working, message sililar with below will be occur at the very begining of the log:
 
 **********************************************************************************************
-/*---------------------------------------------------------------------------*\
-
-| =========                 |                                                 |
-
-| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
-
-|  \\    /   O peration     | Version:  v2106                                 |
-
-|   \\  /    A nd           | Website:  www.openfoam.com                      |
-
-|    \\/     M anipulation  |                                                 |
-
-\*---------------------------------------------------------------------------*/
-
-Build  : v2106 OPENFOAM=2106
-
-Arch   : "LSB;label=64;scalar=64"
-
-Exec   : laplacianFoam -parallel
-
-Date   : Dec 24 2021
-
-Time   : 13:54:21
-
-Host   : ****
-
-PID    : ****
-
-I/O    : uncollated
-
-Case   : ****/OpenFOAM-v2106/tutorials/basic/laplacianFoam/MUI_couple_example
-
-nProcs : 4
-
-Hosts  :
-
-(
-
-    (*****)
-
-)
-
-Pstream initialized with:
-
-    floatTransfer      : 0
-
-    nProcsSimpleSum    : 0
-
-    commsType          : nonBlocking
-
-    polling iterations : 0
-
-trapFpe: Floating point exception trapping enabled (FOAM_SIGFPE).
-
-fileModificationChecking : Monitoring run-time modified files using timeStampMaster (fileModificationSkew 5, maxFileModificationPolls 20)
-
-allowSystemOperations : Allowing user-supplied system call operations
-
-
-// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
 Create time
 
 Create mesh for time = 0
