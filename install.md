@@ -243,7 +243,7 @@ MUI [comm_mpi.h]: rank 0	identifier mpi://domain1/interface_1	domain size 2	peer
 
 MUI [comm_mpi.h]: rank 3	identifier mpi://domain2/interface_1MUI [comm_mpi.h]: rank 2	identifier mpi://domain2/interface_1	domain size 2	peer number 2	
 
-	domain size 2	peer number 2	
+domain size 2	peer number 2	
 
 MUI [lib_mpi_multidomain]: Rank 0 "domain1" registered interface interface_2 as 6abfb875
 
