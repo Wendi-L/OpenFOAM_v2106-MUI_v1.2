@@ -12,7 +12,8 @@ individual and group contributors, integrations
 
 ## About OpenFOAM-MUI release
 Author: Wendi Liu (wendi.liu@stfc.ac.uk) (derived from OpenFOAM MUI Patch by Stephen M. Longshaw)
-Date: 24/12/2021 (Merry Christmas!)
+
+Date: 24/12/2021
 
 | OpenFOAM-v2106 with MUI-v1.2 README |
 
