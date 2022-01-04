@@ -2,7 +2,7 @@
 
 Author: Wendi Liu (wendi.liu@stfc.ac.uk) (derived from OpenFOAM MUI Patch by Stephen M. Longshaw)
 
-Date: 24/12/2021 (Merry Christmas!)
+Date: 24/12/2021
 
 This patch integrates the Multiscale Universal Interface (MUI) library 
 into OpenFOAM-v2106 and the associated ThirdParty-v2106 folder (NOTE if the 
